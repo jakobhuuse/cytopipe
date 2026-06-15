@@ -1,21 +1,15 @@
-"""Annotation join (plate map → index.csv).
-
-The plate map is a small, messy CSV (BOM, alignment whitespace, unicode). Robustness matters
-more than speed here, so we read it with pandas and aggressively strip whitespace. The columns
-that annotate a treatment (``pert_name``, ``Split``, …) cannot be derived from CellProfiler
-output, so they only appear in ``index.csv`` when a plate map is supplied.
-"""
-
 from pathlib import Path
 
 import pandas as pd
 
-# Defaults for the project plate map: join keys against the index's Metadata_Plate/Well, and the
-# annotation columns carried into index.csv (DeepProfiler treatment + replicate). Override only
-# as a special case if a different plate map is used.
+from .index import METADATA_PLATE, METADATA_WELL
+
+# Defaults for the project plate map.
+# Join keys against the index's Metadata_Plate/Well, and add annotation columns.
+# Override only as a special case if a different plate map is used.
 PLATEMAP_PLATE_COL = "Metadata_PlateID"
 PLATEMAP_WELL_COL = "Metadata_DestinationWell"
-PLATEMAP_COLS = ["Metadata_Compound", "Metadata_Batch"]
+PLATEMAP_COLS = ("Metadata_Compound", "Metadata_Batch")
 
 
 def load_platemap(path: Path) -> pd.DataFrame:
@@ -25,12 +19,16 @@ def load_platemap(path: Path) -> pd.DataFrame:
     return df.apply(lambda col: col.str.strip())
 
 
-def _merge_keys(plate_col: str | None, well_col: str | None) -> tuple[list[str], list[str]]:
+def _merge_keys(plate_col: str | None, well_col: str) -> tuple[list[str], list[str]]:
+    """
+    Create aligned (index-side, platemap-side) join keys.
+    Plate optional, well always included.
+    """
     left, right = [], []
     if plate_col:
-        left.append("Metadata_Plate")
+        left.append(METADATA_PLATE)
         right.append(plate_col)
-    left.append("Metadata_Well")
+    left.append(METADATA_WELL)
     right.append(well_col)
     return left, right
 
@@ -39,7 +37,7 @@ def unmatched_wells(
     index: pd.DataFrame,
     platemap: pd.DataFrame,
     plate_col: str | None,
-    well_col: str | None,
+    well_col: str,
 ) -> list[str]:
     """Return the index join-keys (as strings) that have no row in the plate map."""
     left, right = _merge_keys(plate_col, well_col)
@@ -55,14 +53,14 @@ def join_platemap(
     index: pd.DataFrame,
     platemap: pd.DataFrame,
     plate_col: str | None,
-    well_col: str | None,
-    cols: list[str] | None = None,
+    well_col: str,
+    cols: tuple[str, ...] | None,
 ) -> pd.DataFrame:
-    """Pure left-join of plate-map columns onto the index on the plate/well key(s).
+    """
+    Left-join of plate-map columns onto the index on the plate/well key(s).
 
     ``cols`` restricts which plate-map columns are carried into the index (the join keys are
-    always included). Defaults to all columns — but plate maps are wide and messy, so callers
-    typically pass an explicit subset (e.g. a treatment and a replicate column).
+    always included).
     """
     left, right = _merge_keys(plate_col, well_col)
     if cols is not None:
@@ -71,8 +69,6 @@ def join_platemap(
             raise KeyError(f"Plate map is missing requested column(s): {', '.join(missing)}")
         platemap = platemap[[*right, *cols]]
 
-    # Coerce join keys to string on both sides — the index may carry a numeric Metadata_Plate
-    # (from CellProfiler's Image table) while the plate map is all-string.
     index = index.copy()
     platemap = platemap.copy()
     for col in left:
@@ -87,6 +83,7 @@ def join_platemap(
         right_on=right,
         suffixes=("", "_platemap"),
     )
+
     # Drop redundant right-side key columns that duplicate the index keys.
     drop = [c for c in right if c not in left and c in merged.columns]
     return merged.drop(columns=drop)

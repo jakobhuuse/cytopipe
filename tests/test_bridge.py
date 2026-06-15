@@ -36,7 +36,7 @@ def test_clean_nuclei_locations_renames_drops_and_rounds():
 
 def test_clean_nuclei_locations_no_round_keeps_float():
     table = pa.table({"Location_Center_X": [1.5], "Location_Center_Y": [2.5]})
-    out = clean_nuclei_locations(table, round_=False)
+    out = clean_nuclei_locations(table, as_int=False)
     assert out.column(DST_X).to_pylist() == [1.5]
 
 
@@ -79,7 +79,7 @@ def test_platemap_join_and_unmatched():
     missing = unmatched_wells(index, pm, plate_col="PlateID", well_col="Well")
     assert missing == ["26159/Z99"]
 
-    joined = join_platemap(index, pm, plate_col="PlateID", well_col="Well")
+    joined = join_platemap(index, pm, plate_col="PlateID", well_col="Well", cols=None)
     assert joined.loc[joined["Metadata_Well"] == "A02", "pert_name"].iloc[0] == "JUN_WT.2"
     # Unmatched well gets NaN annotations, but the row is kept.
     assert joined["Metadata_Well"].tolist() == ["A02", "Z99"]
