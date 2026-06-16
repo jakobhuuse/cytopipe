@@ -4,6 +4,8 @@ from typing import Annotated, Any
 import typer
 from cytotable import convert
 from cytotable.exceptions import CytoTableException
+from parsl.config import Config
+from parsl.executors import ThreadPoolExecutor
 
 from cytopipe.cellprofiler_deepprofiler import bridge
 from cytopipe.cellprofiler_deepprofiler.platemap import (
@@ -34,6 +36,11 @@ def _convert_to_parquet(
             dest_path=str(dest_path),
             dest_datatype="parquet",
             preset=preset,
+            # CytoTable defaults to a HighThroughputExecutor, whose worker pool +
+            # ZMQ interchange deadlocks under amd64 qemu emulation. Run in-process.
+            # cytopipe runs each plate in parallell, so the performance impact
+            # should be negligable.
+            parsl_config=Config(executors=[ThreadPoolExecutor()]),
             **convert_kwargs,
         )
     except (FileNotFoundError, CytoTableException) as exception:
