@@ -2,8 +2,6 @@
 ``cytopipe cellprofiler-deepprofiler`` — CellProfiler measurement output → DeepProfiler inputs.
 """
 
-from __future__ import annotations
-
 from dataclasses import dataclass, field
 from pathlib import Path
 
