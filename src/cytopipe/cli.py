@@ -37,10 +37,9 @@ def _convert_to_parquet(
             dest_datatype="parquet",
             preset=preset,
             # CytoTable defaults to a HighThroughputExecutor, whose worker pool +
-            # ZMQ interchange deadlocks under amd64 qemu emulation. Run in-process.
-            # cytopipe runs each plate in parallell, so the performance impact
-            # should be negligable.
-            parsl_config=Config(executors=[ThreadPoolExecutor()]),
+            # ZMQ interchange deadlocks under amd64 qemu emulation and oversubscribes
+            # a scheduler's cgroup. Run in-process instead.
+            parsl_config=Config(executors=[ThreadPoolExecutor(max_threads=None)]),
             **convert_kwargs,
         )
     except (FileNotFoundError, CytoTableException) as exception:
