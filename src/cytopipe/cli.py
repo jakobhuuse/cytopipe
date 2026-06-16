@@ -77,7 +77,6 @@ def deepprofiler_parquet(
         dest_path,
         "deepprofiler",
         source_datatype="npz",
-        join=False,
     )
 
 
