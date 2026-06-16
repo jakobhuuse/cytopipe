@@ -6,10 +6,14 @@ import pandas as pd
 import pyarrow as pa
 import pytest
 
-from cytopipe.bridge import run_bridge
-from cytopipe.bridge.index import CHANNEL_ORDER, build_index
-from cytopipe.bridge.locations import DST_X, DST_Y, clean_nuclei_locations
-from cytopipe.bridge.platemap import join_platemap, load_platemap, unmatched_wells
+from cytopipe.cellprofiler_deepprofiler import bridge
+from cytopipe.cellprofiler_deepprofiler.index import CHANNEL_ORDER, build_index
+from cytopipe.cellprofiler_deepprofiler.locations import DST_X, DST_Y, clean_nuclei_locations
+from cytopipe.cellprofiler_deepprofiler.platemap import (
+    join_platemap,
+    load_platemap,
+    unmatched_wells,
+)
 
 FIXTURES = Path(__file__).parent / "fixtures"
 MEASUREMENT = FIXTURES / "cellprofiler" / "26159" / "measurement"
@@ -102,8 +106,8 @@ def test_platemap_join_unknown_column_errors():
         join_platemap(index, pm, plate_col="PlateID", well_col="Well", cols=["nope"])
 
 
-def test_run_bridge_end_to_end(tmp_path):
-    result = run_bridge(MEASUREMENT, tmp_path, PLATEMAP)
+def test_bridge_end_to_end(tmp_path):
+    result = bridge(MEASUREMENT, tmp_path, PLATEMAP)
 
     assert result.plate == "26159"  # inferred from the Image table's Metadata_Plate
     assert result.n_location_files == 2
@@ -125,14 +129,14 @@ def test_run_bridge_end_to_end(tmp_path):
     assert index.loc[index["Metadata_Site"] == 1, "Metadata_Compound"].iloc[0] == "DMSO"
 
 
-def test_run_bridge_is_idempotent(tmp_path):
-    run_bridge(MEASUREMENT, tmp_path, PLATEMAP)
+def test_bridge_is_idempotent(tmp_path):
+    bridge(MEASUREMENT, tmp_path, PLATEMAP)
     first = (tmp_path / "metadata" / "index.csv").read_bytes()
-    run_bridge(MEASUREMENT, tmp_path, PLATEMAP)
+    bridge(MEASUREMENT, tmp_path, PLATEMAP)
     assert (tmp_path / "metadata" / "index.csv").read_bytes() == first
 
 
-def test_run_bridge_accepts_plate_dir(tmp_path):
+def test_bridge_accepts_plate_dir(tmp_path):
     # Passing the plate dir (which contains measurement/) also works.
-    result = run_bridge(MEASUREMENT.parent, tmp_path, PLATEMAP)
+    result = bridge(MEASUREMENT.parent, tmp_path, PLATEMAP)
     assert result.n_sites == 2

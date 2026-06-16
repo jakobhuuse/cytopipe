@@ -1,0 +1,13 @@
+1781608194.466285 2026-06-16 13:09:54 HTEX-Worker-7-75916 MainThread-8399593088 parsl.executors.high_throughput.process_worker_pool:665 worker INFO: Worker 7 started
+1781608194.475617 2026-06-16 13:09:54 HTEX-Worker-7-75916 MainThread-8399593088 parsl.executors.high_throughput.process_worker_pool:778 worker INFO: Received executor task 2
+1781608194.931350 2026-06-16 13:09:54 HTEX-Worker-7-75916 MainThread-8399593088 parsl.executors.high_throughput.process_worker_pool:812 worker INFO: Completed executor task 2
+1781608194.938771 2026-06-16 13:09:54 HTEX-Worker-7-75916 MainThread-8399593088 parsl.executors.high_throughput.process_worker_pool:824 worker INFO: All processing finished for executor task 2
+1781608195.016382 2026-06-16 13:09:55 HTEX-Worker-7-75916 MainThread-8399593088 parsl.executors.high_throughput.process_worker_pool:778 worker INFO: Received executor task 9
+1781608195.016745 2026-06-16 13:09:55 HTEX-Worker-7-75916 MainThread-8399593088 parsl.executors.high_throughput.process_worker_pool:812 worker INFO: Completed executor task 9
+1781608195.016933 2026-06-16 13:09:55 HTEX-Worker-7-75916 MainThread-8399593088 parsl.executors.high_throughput.process_worker_pool:824 worker INFO: All processing finished for executor task 9
+1781608195.324099 2026-06-16 13:09:55 HTEX-Worker-7-75916 MainThread-8399593088 parsl.executors.high_throughput.process_worker_pool:778 worker INFO: Received executor task 15
+1781608195.388106 2026-06-16 13:09:55 HTEX-Worker-7-75916 MainThread-8399593088 parsl.executors.high_throughput.process_worker_pool:812 worker INFO: Completed executor task 15
+1781608195.388286 2026-06-16 13:09:55 HTEX-Worker-7-75916 MainThread-8399593088 parsl.executors.high_throughput.process_worker_pool:824 worker INFO: All processing finished for executor task 15
+1781608195.390047 2026-06-16 13:09:55 HTEX-Worker-7-75916 MainThread-8399593088 parsl.executors.high_throughput.process_worker_pool:778 worker INFO: Received executor task 19
+1781608195.426464 2026-06-16 13:09:55 HTEX-Worker-7-75916 MainThread-8399593088 parsl.executors.high_throughput.process_worker_pool:812 worker INFO: Completed executor task 19
+1781608195.426679 2026-06-16 13:09:55 HTEX-Worker-7-75916 MainThread-8399593088 parsl.executors.high_throughput.process_worker_pool:824 worker INFO: All processing finished for executor task 19

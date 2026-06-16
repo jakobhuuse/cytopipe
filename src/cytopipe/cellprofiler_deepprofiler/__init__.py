@@ -1,5 +1,5 @@
 """
-``cytopipe bridge`` — CellProfiler measurement output → DeepProfiler inputs.
+``cytopipe cellprofiler-deepprofiler`` — CellProfiler measurement output → DeepProfiler inputs.
 """
 
 from __future__ import annotations
@@ -20,7 +20,7 @@ from .platemap import (
     unmatched_wells,
 )
 
-__all__ = ["run_bridge", "BridgeResult"]
+__all__ = ["bridge", "BridgeResult"]
 _IMAGE_TABLE = "Image.csv"
 
 
@@ -71,7 +71,7 @@ def _resolve_plate(image_table: pd.DataFrame, measurement: Path) -> str:
     return measurement.resolve().parent.name
 
 
-def run_bridge(
+def bridge(
     source: Path,
     dest: Path,
     platemap: Path,
@@ -82,9 +82,6 @@ def run_bridge(
 ) -> BridgeResult:
     """
     Convert a CellProfiler ``measurement/`` dir to DeepProfiler ``locations/`` + ``index.csv``.
-
-    The ``platemap_*`` overrides default to the project plate-map schema; pass them only for a
-    differently-shaped plate map.
     """
     source, dest = Path(source), Path(dest)
     measurement = _resolve_measurement(source)

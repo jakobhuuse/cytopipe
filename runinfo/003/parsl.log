@@ -1,0 +1,453 @@
+1781608220.929352 2026-06-16 13:10:20 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:114 __init__ INFO: Starting DataFlowKernel with config
+Config(
+    dependency_resolver=None, 
+    executors=(HighThroughputExecutor(
+        address=None, 
+        address_probe_timeout=None, 
+        available_accelerators=[], 
+        block_error_handler=<function simple_error_handler at 0x1118d72e0>, 
+        cores_per_worker=1.0, 
+        cpu_affinity='none', 
+        drain_period=None, 
+        encrypted=True, 
+        heartbeat_period=30, 
+        heartbeat_threshold=120, 
+        interchange_launch_cmd=['interchange.py'], 
+        interchange_port_range=(55000, 56000), 
+        label='htex_default_for_cytotable', 
+        launch_cmd='process_worker_pool.py {debug} {max_workers_per_node} -a {addresses} -p {prefetch_capacity} -c {cores_per_worker} -m {mem_per_worker} --poll {poll_period} --port={worker_port} --cert_dir {cert_dir} --logdir={logdir} --logconf={logconf} --block_id={{block_id}} --hb_period={heartbeat_period} {address_probe_timeout_string} --hb_threshold={heartbeat_threshold} --drain_period={drain_period} --cpu-affinity {cpu_affinity} {enable_mpi_mode} --mpi-launcher={mpi_launcher} --available-accelerators {accelerators}', 
+        loopback_address='127.0.0.1', 
+        manager_selector=<parsl.executors.high_throughput.manager_selector.RandomManagerSelector object at 0x1118e9100>, 
+        max_workers_per_node=inf, 
+        mem_per_worker=None, 
+        poll_period=10, 
+        prefetch_capacity=0, 
+        provider=LocalProvider(
+            cmd_timeout=30, 
+            init_blocks=1, 
+            launcher=SingleNodeLauncher(debug=True, fail_on_any=False), 
+            max_blocks=1, 
+            min_blocks=0, 
+            nodes_per_block=1, 
+            parallelism=1, 
+            worker_init=''
+        ), 
+        remote_monitoring_radio=HTEXRadio(), 
+        storage_access=None, 
+        worker_debug=False, 
+        worker_logdir_root=None, 
+        worker_port=None, 
+        worker_port_range=(54000, 55000), 
+        working_dir=None
+    ),), 
+    exit_mode='cleanup', 
+    garbage_collect=True, 
+    initialize_logging=True, 
+    internal_tasks_max_threads=10, 
+    max_idletime=120.0, 
+    memoizer=None, 
+    monitoring=None, 
+    project_name=None, 
+    retries=0, 
+    retry_handler=None, 
+    run_dir='runinfo', 
+    std_autopath=None, 
+    strategy='simple', 
+    strategy_period=5, 
+    usage_tracking=0
+)
+1781608220.934690 2026-06-16 13:10:20 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:116 __init__ INFO: Parsl version: 2026.06.01
+1781608220.934804 2026-06-16 13:10:20 MainProcess-75986 MainThread-8399593088 parsl.usage_tracking.usage:119 __init__ DEBUG: Tracking level: 0
+1781608220.934869 2026-06-16 13:10:20 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:139 __init__ INFO: Run id is: 6476113e-26d8-49f7-8690-1fd97cdfb0c2
+1781608220.936042 2026-06-16 13:10:20 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:146 __init__ DEBUG: Considering candidate for workflow name: /Users/jakob/Documents/SINTEF/project/cytopipe/.venv/lib/python3.12/site-packages/parsl/dataflow/dflow.py
+1781608220.936090 2026-06-16 13:10:20 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:146 __init__ DEBUG: Considering candidate for workflow name: /Users/jakob/Documents/SINTEF/project/cytopipe/.venv/lib/python3.12/site-packages/parsl/dataflow/dflow.py
+1781608220.936126 2026-06-16 13:10:20 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:146 __init__ DEBUG: Considering candidate for workflow name: /Users/jakob/Documents/SINTEF/project/cytopipe/.venv/lib/python3.12/site-packages/cytotable/convert.py
+1781608220.936160 2026-06-16 13:10:20 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:152 __init__ DEBUG: Using convert.py as workflow name
+1781608220.936298 2026-06-16 13:10:20 MainProcess-75986 MainThread-8399593088 parsl.dataflow.memoization:335 start INFO: App caching initialized
+1781608220.936349 2026-06-16 13:10:20 MainProcess-75986 MainThread-8399593088 parsl.jobs.strategy:145 __init__ DEBUG: Scaling strategy: simple
+1781608220.936495 2026-06-16 13:10:20 MainProcess-75986 JobStatusPoller-Timer-Thread-4756368528-6128300032 parsl.jobs.strategy:184 _general_strategy DEBUG: general strategy starting with strategy_type simple for 0 executors
+1781608220.936663 2026-06-16 13:10:20 MainProcess-75986 JobStatusPoller-Timer-Thread-4756368528-6128300032 parsl.process_loggers:27 wrapped DEBUG: Normal ending for _general_strategy on thread JobStatusPoller-Timer-Thread-4756368528
+1781608220.936821 2026-06-16 13:10:20 MainProcess-75986 MainThread-8399593088 parsl.executors.high_throughput.executor:443 start DEBUG: Creating CurveZMQ certificates
+1781608220.939102 2026-06-16 13:10:20 MainProcess-75986 MainThread-8399593088 parsl.executors.high_throughput.executor:630 _start_result_queue_thread DEBUG: Starting result queue thread
+1781608220.939232 2026-06-16 13:10:20 MainProcess-75986 HTEX-Result-Queue-Thread-6148567040 parsl.executors.high_throughput.executor:506 _result_queue_worker DEBUG: Result queue worker starting
+1781608220.939261 2026-06-16 13:10:20 MainProcess-75986 MainThread-8399593088 parsl.executors.high_throughput.executor:634 _start_result_queue_thread DEBUG: Started result queue thread: <Thread(HTEX-Result-Queue-Thread, started daemon 6148567040)>
+1781608220.944740 2026-06-16 13:10:20 MainProcess-75986 MainThread-8399593088 parsl.executors.high_throughput.executor:606 _start_local_interchange_process DEBUG: Popened interchange process. Writing config object
+1781608220.945071 2026-06-16 13:10:20 MainProcess-75986 MainThread-8399593088 parsl.executors.high_throughput.executor:610 _start_local_interchange_process DEBUG: Sent config object. Requesting worker ports
+1781608220.945133 2026-06-16 13:10:20 MainProcess-75986 MainThread-8399593088 parsl.executors.high_throughput.zmq_pipes:77 run DEBUG: Sending command client command
+1781608221.206020 2026-06-16 13:10:21 MainProcess-75986 MainThread-8399593088 parsl.executors.high_throughput.zmq_pipes:92 run DEBUG: Polling for command client response or timeout
+1781608221.206259 2026-06-16 13:10:21 MainProcess-75986 MainThread-8399593088 parsl.executors.high_throughput.zmq_pipes:104 run DEBUG: Receiving command client response
+1781608221.206313 2026-06-16 13:10:21 MainProcess-75986 MainThread-8399593088 parsl.executors.high_throughput.zmq_pipes:106 run DEBUG: Received command client response
+1781608221.206344 2026-06-16 13:10:21 MainProcess-75986 MainThread-8399593088 parsl.executors.high_throughput.executor:616 _start_local_interchange_process DEBUG: Interchange process started (<Popen: returncode: None args: ['interchange.py']>).  Worker port: 54314
+1781608221.206431 2026-06-16 13:10:21 MainProcess-75986 MainThread-8399593088 parsl.executors.high_throughput.executor:434 initialize_scaling DEBUG: Launch command: process_worker_pool.py   -a 78.91.96.174,127.0.0.1,10.218.118.107 -p 0 -c 1.0 -m None --poll 10 --port=54314 --cert_dir /Users/jakob/Documents/SINTEF/project/cytopipe/runinfo/003/htex_default_for_cytotable/certificates --logdir=/Users/jakob/Documents/SINTEF/project/cytopipe/runinfo/003/htex_default_for_cytotable --logconf=None --block_id={block_id} --hb_period=30  --hb_threshold=120 --drain_period=None --cpu-affinity none  --mpi-launcher=mpiexec --available-accelerators 
+1781608221.206460 2026-06-16 13:10:21 MainProcess-75986 MainThread-8399593088 parsl.executors.high_throughput.executor:436 initialize_scaling DEBUG: Starting HighThroughputExecutor with provider:
+LocalProvider(
+    cmd_timeout=30, 
+    init_blocks=1, 
+    launcher=SingleNodeLauncher(debug=True, fail_on_any=False), 
+    max_blocks=1, 
+    min_blocks=0, 
+    nodes_per_block=1, 
+    parallelism=1, 
+    worker_init=''
+)
+1781608221.206824 2026-06-16 13:10:21 MainProcess-75986 MainThread-8399593088 parsl.jobs.job_status_poller:30 add_executors DEBUG: Adding executor htex_default_for_cytotable
+1781608221.232229 2026-06-16 13:10:21 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:953 submit DEBUG: Task 0 will be sent to executor htex_default_for_cytotable
+1781608221.232315 2026-06-16 13:10:21 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:761 _add_output_deps DEBUG: Adding output dependencies
+1781608221.232350 2026-06-16 13:10:21 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:1002 submit DEBUG: Added output dependencies
+1781608221.232371 2026-06-16 13:10:21 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:1011 submit DEBUG: Gathering dependencies
+1781608221.232401 2026-06-16 13:10:21 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:1014 submit DEBUG: Gathered dependencies
+1781608221.232419 2026-06-16 13:10:21 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:1026 submit INFO: Task 0 submitted for App _get_table_keyset_pagination_sets, not waiting on any dependency
+1781608221.232437 2026-06-16 13:10:21 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:1028 submit DEBUG: Task 0 has AppFuture: <AppFuture at 0x11b806090 state=pending>
+1781608221.232466 2026-06-16 13:10:21 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:554 _update_task_state INFO: Task 0 initializing state to pending
+1781608221.232585 2026-06-16 13:10:21 MainProcess-75986 Task-Launch_0-6165393408 parsl.dataflow.memoization:379 check_memo DEBUG: Task 0 will not be memoized
+1781608221.232636 2026-06-16 13:10:21 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:953 submit DEBUG: Task 1 will be sent to executor htex_default_for_cytotable
+1781608221.232684 2026-06-16 13:10:21 MainProcess-75986 Task-Launch_0-6165393408 parsl.executors.high_throughput.executor:717 submit DEBUG: Pushing function <function _get_table_keyset_pagination_sets at 0x11b1f4a40> to queue with args ()
+1781608221.232739 2026-06-16 13:10:21 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:761 _add_output_deps DEBUG: Adding output dependencies
+1781608221.232952 2026-06-16 13:10:21 MainProcess-75986 Task-Launch_0-6165393408 parsl.executors.high_throughput.zmq_pipes:148 put DEBUG: Sending TasksOutgoing message
+1781608221.232988 2026-06-16 13:10:21 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:1002 submit DEBUG: Added output dependencies
+1781608221.233059 2026-06-16 13:10:21 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:1011 submit DEBUG: Gathering dependencies
+1781608221.233095 2026-06-16 13:10:21 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:1014 submit DEBUG: Gathered dependencies
+1781608221.233121 2026-06-16 13:10:21 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:1026 submit INFO: Task 1 submitted for App _get_table_keyset_pagination_sets, not waiting on any dependency
+1781608221.233153 2026-06-16 13:10:21 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:1028 submit DEBUG: Task 1 has AppFuture: <AppFuture at 0x11b805b50 state=pending>
+1781608221.233186 2026-06-16 13:10:21 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:554 _update_task_state INFO: Task 1 initializing state to pending
+1781608221.233241 2026-06-16 13:10:21 MainProcess-75986 Task-Launch_0-6165393408 parsl.executors.high_throughput.zmq_pipes:150 put DEBUG: Sent TasksOutgoing message
+1781608221.233271 2026-06-16 13:10:21 MainProcess-75986 Task-Launch_0-6165393408 parsl.dataflow.dflow:552 _update_task_state INFO: Task 0 changing state from pending to launched
+1781608221.233292 2026-06-16 13:10:21 MainProcess-75986 Task-Launch_0-6165393408 parsl.dataflow.dflow:714 launch_task INFO: Parsl task 0 try 0 launched on executor htex_default_for_cytotable with executor id 1
+1781608221.233310 2026-06-16 13:10:21 MainProcess-75986 Task-Launch_0-6165393408 parsl.dataflow.dflow:1209 log_std_stream INFO: Standard out for task 0 will not be redirected.
+1781608221.233330 2026-06-16 13:10:21 MainProcess-75986 Task-Launch_0-6165393408 parsl.dataflow.dflow:1209 log_std_stream INFO: Standard error for task 0 will not be redirected.
+1781608221.233353 2026-06-16 13:10:21 MainProcess-75986 Task-Launch_0-6165393408 parsl.process_loggers:27 wrapped DEBUG: Normal ending for _launch_if_ready_async on thread Task-Launch_0
+1781608221.233382 2026-06-16 13:10:21 MainProcess-75986 Task-Launch_0-6165393408 parsl.dataflow.memoization:379 check_memo DEBUG: Task 1 will not be memoized
+1781608221.233411 2026-06-16 13:10:21 MainProcess-75986 Task-Launch_0-6165393408 parsl.executors.high_throughput.executor:717 submit DEBUG: Pushing function <function _get_table_keyset_pagination_sets at 0x11b1f4a40> to queue with args ()
+1781608221.233516 2026-06-16 13:10:21 MainProcess-75986 Task-Launch_0-6165393408 parsl.executors.high_throughput.zmq_pipes:148 put DEBUG: Sending TasksOutgoing message
+1781608221.233548 2026-06-16 13:10:21 MainProcess-75986 Task-Launch_0-6165393408 parsl.executors.high_throughput.zmq_pipes:150 put DEBUG: Sent TasksOutgoing message
+1781608221.233574 2026-06-16 13:10:21 MainProcess-75986 Task-Launch_0-6165393408 parsl.dataflow.dflow:552 _update_task_state INFO: Task 1 changing state from pending to launched
+1781608221.233593 2026-06-16 13:10:21 MainProcess-75986 Task-Launch_0-6165393408 parsl.dataflow.dflow:714 launch_task INFO: Parsl task 1 try 0 launched on executor htex_default_for_cytotable with executor id 2
+1781608221.233610 2026-06-16 13:10:21 MainProcess-75986 Task-Launch_0-6165393408 parsl.dataflow.dflow:1209 log_std_stream INFO: Standard out for task 1 will not be redirected.
+1781608221.233627 2026-06-16 13:10:21 MainProcess-75986 Task-Launch_0-6165393408 parsl.dataflow.dflow:1209 log_std_stream INFO: Standard error for task 1 will not be redirected.
+1781608221.233650 2026-06-16 13:10:21 MainProcess-75986 Task-Launch_0-6165393408 parsl.process_loggers:27 wrapped DEBUG: Normal ending for _launch_if_ready_async on thread Task-Launch_0
+1781608225.942054 2026-06-16 13:10:25 MainProcess-75986 JobStatusPoller-Timer-Thread-4756368528-6128300032 parsl.executors.high_throughput.zmq_pipes:77 run DEBUG: Sending command client command
+1781608225.942831 2026-06-16 13:10:25 MainProcess-75986 JobStatusPoller-Timer-Thread-4756368528-6128300032 parsl.executors.high_throughput.zmq_pipes:104 run DEBUG: Receiving command client response
+1781608225.944530 2026-06-16 13:10:25 MainProcess-75986 JobStatusPoller-Timer-Thread-4756368528-6128300032 parsl.executors.high_throughput.zmq_pipes:106 run DEBUG: Received command client response
+1781608225.944869 2026-06-16 13:10:25 MainProcess-75986 JobStatusPoller-Timer-Thread-4756368528-6128300032 parsl.jobs.strategy:184 _general_strategy DEBUG: general strategy starting with strategy_type simple for 1 executors
+1781608225.945046 2026-06-16 13:10:25 MainProcess-75986 JobStatusPoller-Timer-Thread-4756368528-6128300032 parsl.jobs.strategy:194 _general_strategy DEBUG: [Scaling executor htex_default_for_cytotable] Strategizing for executor
+1781608225.945236 2026-06-16 13:10:25 MainProcess-75986 JobStatusPoller-Timer-Thread-4756368528-6128300032 parsl.jobs.strategy:197 _general_strategy DEBUG: [Scaling executor htex_default_for_cytotable] Scaling out 1 initial blocks
+1781608225.945452 2026-06-16 13:10:25 MainProcess-75986 JobStatusPoller-Timer-Thread-4756368528-6128300032 parsl.executors.status_handling:207 scale_out_facade INFO: [Scaling executor htex_default_for_cytotable] Scaling out by 1 blocks
+1781608225.945642 2026-06-16 13:10:25 MainProcess-75986 JobStatusPoller-Timer-Thread-4756368528-6128300032 parsl.executors.status_handling:210 scale_out_facade INFO: [Scaling executor htex_default_for_cytotable] Allocated block ID 0
+1781608225.945818 2026-06-16 13:10:25 MainProcess-75986 JobStatusPoller-Timer-Thread-4756368528-6128300032 parsl.executors.status_handling:265 _launch_block DEBUG: [Scaling executor htex_default_for_cytotable] Submitting to provider with job_name parsl.htex_default_for_cytotable.block-0
+1781608225.947141 2026-06-16 13:10:25 MainProcess-75986 JobStatusPoller-Timer-Thread-4756368528-6128300032 parsl.providers.local.local:208 submit DEBUG: Launching
+1781608225.947316 2026-06-16 13:10:25 MainProcess-75986 JobStatusPoller-Timer-Thread-4756368528-6128300032 parsl.utils:498 execute_wait DEBUG: Creating process with command '/bin/bash -c 'echo - >/Users/jakob/Documents/SINTEF/project/cytopipe/runinfo/003/submit_scripts/parsl.htex_default_for_cytotable.block-0.1781608225.945956.sh.ec && { { bash /Users/jakob/Documents/SINTEF/project/cytopipe/runinfo/003/submit_scripts/parsl.htex_default_for_cytotable.block-0.1781608225.945956.sh 1>/Users/jakob/Documents/SINTEF/project/cytopipe/runinfo/003/submit_scripts/parsl.htex_default_for_cytotable.block-0.1781608225.945956.sh.out 2>/Users/jakob/Documents/SINTEF/project/cytopipe/runinfo/003/submit_scripts/parsl.htex_default_for_cytotable.block-0.1781608225.945956.sh.err ; echo $? > /Users/jakob/Documents/SINTEF/project/cytopipe/runinfo/003/submit_scripts/parsl.htex_default_for_cytotable.block-0.1781608225.945956.sh.ec ; } >/dev/null 2>&1 & echo "PID:$!" ; }''
+1781608225.958708 2026-06-16 13:10:25 MainProcess-75986 JobStatusPoller-Timer-Thread-4756368528-6128300032 parsl.utils:506 execute_wait DEBUG: Created process with pid 76040. Performing communicate
+1781608225.969242 2026-06-16 13:10:25 MainProcess-75986 JobStatusPoller-Timer-Thread-4756368528-6128300032 parsl.utils:509 execute_wait DEBUG: Process 76040 returned 0
+1781608225.969339 2026-06-16 13:10:25 MainProcess-75986 JobStatusPoller-Timer-Thread-4756368528-6128300032 parsl.utils:515 execute_wait DEBUG: Execution of command in process 76040 completed normally
+1781608225.969458 2026-06-16 13:10:25 MainProcess-75986 JobStatusPoller-Timer-Thread-4756368528-6128300032 parsl.executors.status_handling:268 _launch_block DEBUG: [Scaling executor htex_default_for_cytotable] Launched block 0 with job ID 76041
+1781608225.969569 2026-06-16 13:10:25 MainProcess-75986 JobStatusPoller-Timer-Thread-4756368528-6128300032 parsl.jobs.strategy:220 _general_strategy DEBUG: [Scaling executor htex_default_for_cytotable] Executor 2 active tasks, 1 active slots, and 0/1 running/pending blocks
+1781608225.969625 2026-06-16 13:10:25 MainProcess-75986 JobStatusPoller-Timer-Thread-4756368528-6128300032 parsl.jobs.strategy:263 _general_strategy DEBUG: [Scaling executor htex_default_for_cytotable] Strategy case 2: slots are overloaded - (slot_ratio = active_slots/active_tasks) < parallelism
+1781608225.969691 2026-06-16 13:10:25 MainProcess-75986 JobStatusPoller-Timer-Thread-4756368528-6128300032 parsl.jobs.strategy:269 _general_strategy DEBUG: [Scaling executor htex_default_for_cytotable] Strategy case 2a: active_blocks 1 >= max_blocks 1 so not scaling out
+1781608225.969736 2026-06-16 13:10:25 MainProcess-75986 JobStatusPoller-Timer-Thread-4756368528-6128300032 parsl.process_loggers:27 wrapped DEBUG: Normal ending for _general_strategy on thread JobStatusPoller-Timer-Thread-4756368528
+1781608227.295042 2026-06-16 13:10:27 MainProcess-75986 HTEX-Result-Queue-Thread-6148567040 parsl.executors.high_throughput.zmq_pipes:189 get DEBUG: Receiving ResultsIncoming multipart message
+1781608227.295340 2026-06-16 13:10:27 MainProcess-75986 HTEX-Result-Queue-Thread-6148567040 parsl.dataflow.dflow:552 _update_task_state INFO: Task 1 changing state from launched to exec_done
+1781608227.295404 2026-06-16 13:10:27 MainProcess-75986 HTEX-Result-Queue-Thread-6148567040 parsl.dataflow.dflow:1209 log_std_stream INFO: Standard out for task 1 will not be redirected.
+1781608227.295432 2026-06-16 13:10:27 MainProcess-75986 HTEX-Result-Queue-Thread-6148567040 parsl.dataflow.dflow:1209 log_std_stream INFO: Standard error for task 1 will not be redirected.
+1781608227.295966 2026-06-16 13:10:27 MainProcess-75986 HTEX-Result-Queue-Thread-6148567040 parsl.executors.high_throughput.zmq_pipes:189 get DEBUG: Receiving ResultsIncoming multipart message
+1781608227.296016 2026-06-16 13:10:27 MainProcess-75986 HTEX-Result-Queue-Thread-6148567040 parsl.dataflow.dflow:552 _update_task_state INFO: Task 0 changing state from launched to exec_done
+1781608227.296048 2026-06-16 13:10:27 MainProcess-75986 HTEX-Result-Queue-Thread-6148567040 parsl.dataflow.dflow:1209 log_std_stream INFO: Standard out for task 0 will not be redirected.
+1781608227.296129 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:953 submit DEBUG: Task 2 will be sent to executor htex_default_for_cytotable
+1781608227.296170 2026-06-16 13:10:27 MainProcess-75986 HTEX-Result-Queue-Thread-6148567040 parsl.dataflow.dflow:1209 log_std_stream INFO: Standard error for task 0 will not be redirected.
+1781608227.296251 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:761 _add_output_deps DEBUG: Adding output dependencies
+1781608227.296330 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:1002 submit DEBUG: Added output dependencies
+1781608227.296351 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:1011 submit DEBUG: Gathering dependencies
+1781608227.296380 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:1014 submit DEBUG: Gathered dependencies
+1781608227.296398 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:1026 submit INFO: Task 2 submitted for App _get_table_columns_and_types, not waiting on any dependency
+1781608227.296416 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:1028 submit DEBUG: Task 2 has AppFuture: <AppFuture at 0x11b6d76b0 state=pending>
+1781608227.296442 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:554 _update_task_state INFO: Task 2 initializing state to pending
+1781608227.296488 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:953 submit DEBUG: Task 3 will be sent to executor htex_default_for_cytotable
+1781608227.296531 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:761 _add_output_deps DEBUG: Adding output dependencies
+1781608227.296559 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:1002 submit DEBUG: Added output dependencies
+1781608227.296584 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:1011 submit DEBUG: Gathering dependencies
+1781608227.296612 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:1014 submit DEBUG: Gathered dependencies
+1781608227.296643 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:1026 submit INFO: Task 3 submitted for App _prep_cast_column_data_types, waiting on task 2
+1781608227.296667 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:1028 submit DEBUG: Task 3 has AppFuture: <AppFuture at 0x11b6d7ce0 state=pending>
+1781608227.296699 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:554 _update_task_state INFO: Task 3 initializing state to pending
+1781608227.296742 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:953 submit DEBUG: Task 4 will be sent to executor htex_default_for_cytotable
+1781608227.296771 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:761 _add_output_deps DEBUG: Adding output dependencies
+1781608227.296797 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:1002 submit DEBUG: Added output dependencies
+1781608227.296843 2026-06-16 13:10:27 MainProcess-75986 Task-Launch_0-6165393408 parsl.dataflow.memoization:379 check_memo DEBUG: Task 2 will not be memoized
+1781608227.296876 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:1011 submit DEBUG: Gathering dependencies
+1781608227.296925 2026-06-16 13:10:27 MainProcess-75986 Task-Launch_0-6165393408 parsl.executors.high_throughput.executor:717 submit DEBUG: Pushing function <function _get_table_columns_and_types at 0x114fcfa60> to queue with args ()
+1781608227.296962 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:1014 submit DEBUG: Gathered dependencies
+1781608227.297188 2026-06-16 13:10:27 MainProcess-75986 Task-Launch_0-6165393408 parsl.executors.high_throughput.zmq_pipes:148 put DEBUG: Sending TasksOutgoing message
+1781608227.297224 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:1026 submit INFO: Task 4 submitted for App _get_table_columns_and_types, not waiting on any dependency
+1781608227.297291 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:1028 submit DEBUG: Task 4 has AppFuture: <AppFuture at 0x11b8a35f0 state=pending>
+1781608227.297323 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:554 _update_task_state INFO: Task 4 initializing state to pending
+1781608227.297362 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:953 submit DEBUG: Task 5 will be sent to executor htex_default_for_cytotable
+1781608227.297404 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:761 _add_output_deps DEBUG: Adding output dependencies
+1781608227.297453 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:1002 submit DEBUG: Added output dependencies
+1781608227.297481 2026-06-16 13:10:27 MainProcess-75986 Task-Launch_0-6165393408 parsl.executors.high_throughput.zmq_pipes:150 put DEBUG: Sent TasksOutgoing message
+1781608227.297511 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:1011 submit DEBUG: Gathering dependencies
+1781608227.297557 2026-06-16 13:10:27 MainProcess-75986 Task-Launch_0-6165393408 parsl.dataflow.dflow:552 _update_task_state INFO: Task 2 changing state from pending to launched
+1781608227.297601 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:1014 submit DEBUG: Gathered dependencies
+1781608227.297639 2026-06-16 13:10:27 MainProcess-75986 Task-Launch_0-6165393408 parsl.dataflow.dflow:714 launch_task INFO: Parsl task 2 try 0 launched on executor htex_default_for_cytotable with executor id 3
+1781608227.297674 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:1026 submit INFO: Task 5 submitted for App _prep_cast_column_data_types, waiting on task 4
+1781608227.297708 2026-06-16 13:10:27 MainProcess-75986 Task-Launch_0-6165393408 parsl.dataflow.dflow:1209 log_std_stream INFO: Standard out for task 2 will not be redirected.
+1781608227.297737 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:1028 submit DEBUG: Task 5 has AppFuture: <AppFuture at 0x11b8a04d0 state=pending>
+1781608227.297762 2026-06-16 13:10:27 MainProcess-75986 Task-Launch_0-6165393408 parsl.dataflow.dflow:1209 log_std_stream INFO: Standard error for task 2 will not be redirected.
+1781608227.297794 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:554 _update_task_state INFO: Task 5 initializing state to pending
+1781608227.297821 2026-06-16 13:10:27 MainProcess-75986 Task-Launch_0-6165393408 parsl.process_loggers:27 wrapped DEBUG: Normal ending for _launch_if_ready_async on thread Task-Launch_0
+1781608227.297908 2026-06-16 13:10:27 MainProcess-75986 Task-Launch_0-6165393408 parsl.dataflow.dflow:611 _launch_if_ready_async DEBUG: Task 3 has outstanding dependencies, so launch_if_ready skipping
+1781608227.297932 2026-06-16 13:10:27 MainProcess-75986 Task-Launch_0-6165393408 parsl.process_loggers:27 wrapped DEBUG: Normal ending for _launch_if_ready_async on thread Task-Launch_0
+1781608227.297963 2026-06-16 13:10:27 MainProcess-75986 Task-Launch_0-6165393408 parsl.dataflow.memoization:379 check_memo DEBUG: Task 4 will not be memoized
+1781608227.297989 2026-06-16 13:10:27 MainProcess-75986 Task-Launch_0-6165393408 parsl.executors.high_throughput.executor:717 submit DEBUG: Pushing function <function _get_table_columns_and_types at 0x114fcfa60> to queue with args ()
+1781608227.298106 2026-06-16 13:10:27 MainProcess-75986 Task-Launch_0-6165393408 parsl.executors.high_throughput.zmq_pipes:148 put DEBUG: Sending TasksOutgoing message
+1781608227.298146 2026-06-16 13:10:27 MainProcess-75986 Task-Launch_0-6165393408 parsl.executors.high_throughput.zmq_pipes:150 put DEBUG: Sent TasksOutgoing message
+1781608227.298243 2026-06-16 13:10:27 MainProcess-75986 Task-Launch_0-6165393408 parsl.dataflow.dflow:552 _update_task_state INFO: Task 4 changing state from pending to launched
+1781608227.298285 2026-06-16 13:10:27 MainProcess-75986 Task-Launch_0-6165393408 parsl.dataflow.dflow:714 launch_task INFO: Parsl task 4 try 0 launched on executor htex_default_for_cytotable with executor id 4
+1781608227.298310 2026-06-16 13:10:27 MainProcess-75986 Task-Launch_0-6165393408 parsl.dataflow.dflow:1209 log_std_stream INFO: Standard out for task 4 will not be redirected.
+1781608227.298327 2026-06-16 13:10:27 MainProcess-75986 Task-Launch_0-6165393408 parsl.dataflow.dflow:1209 log_std_stream INFO: Standard error for task 4 will not be redirected.
+1781608227.298346 2026-06-16 13:10:27 MainProcess-75986 Task-Launch_0-6165393408 parsl.process_loggers:27 wrapped DEBUG: Normal ending for _launch_if_ready_async on thread Task-Launch_0
+1781608227.298384 2026-06-16 13:10:27 MainProcess-75986 Task-Launch_0-6165393408 parsl.dataflow.dflow:611 _launch_if_ready_async DEBUG: Task 5 has outstanding dependencies, so launch_if_ready skipping
+1781608227.298404 2026-06-16 13:10:27 MainProcess-75986 Task-Launch_0-6165393408 parsl.process_loggers:27 wrapped DEBUG: Normal ending for _launch_if_ready_async on thread Task-Launch_0
+1781608227.299995 2026-06-16 13:10:27 MainProcess-75986 HTEX-Result-Queue-Thread-6148567040 parsl.executors.high_throughput.zmq_pipes:189 get DEBUG: Receiving ResultsIncoming multipart message
+1781608227.300062 2026-06-16 13:10:27 MainProcess-75986 HTEX-Result-Queue-Thread-6148567040 parsl.dataflow.dflow:552 _update_task_state INFO: Task 4 changing state from launched to exec_done
+1781608227.300095 2026-06-16 13:10:27 MainProcess-75986 HTEX-Result-Queue-Thread-6148567040 parsl.dataflow.dflow:1209 log_std_stream INFO: Standard out for task 4 will not be redirected.
+1781608227.300124 2026-06-16 13:10:27 MainProcess-75986 HTEX-Result-Queue-Thread-6148567040 parsl.dataflow.dflow:1209 log_std_stream INFO: Standard error for task 4 will not be redirected.
+1781608227.300187 2026-06-16 13:10:27 MainProcess-75986 Task-Launch_0-6165393408 parsl.dataflow.memoization:379 check_memo DEBUG: Task 5 will not be memoized
+1781608227.300226 2026-06-16 13:10:27 MainProcess-75986 Task-Launch_0-6165393408 parsl.executors.high_throughput.executor:717 submit DEBUG: Pushing function <function _prep_cast_column_data_types at 0x11b1f4540> to queue with args ()
+1781608227.300290 2026-06-16 13:10:27 MainProcess-75986 Task-Launch_0-6165393408 parsl.executors.high_throughput.zmq_pipes:148 put DEBUG: Sending TasksOutgoing message
+1781608227.300325 2026-06-16 13:10:27 MainProcess-75986 Task-Launch_0-6165393408 parsl.executors.high_throughput.zmq_pipes:150 put DEBUG: Sent TasksOutgoing message
+1781608227.300349 2026-06-16 13:10:27 MainProcess-75986 Task-Launch_0-6165393408 parsl.dataflow.dflow:552 _update_task_state INFO: Task 5 changing state from pending to launched
+1781608227.300369 2026-06-16 13:10:27 MainProcess-75986 Task-Launch_0-6165393408 parsl.dataflow.dflow:714 launch_task INFO: Parsl task 5 try 0 launched on executor htex_default_for_cytotable with executor id 5
+1781608227.300387 2026-06-16 13:10:27 MainProcess-75986 Task-Launch_0-6165393408 parsl.dataflow.dflow:1209 log_std_stream INFO: Standard out for task 5 will not be redirected.
+1781608227.300409 2026-06-16 13:10:27 MainProcess-75986 Task-Launch_0-6165393408 parsl.dataflow.dflow:1209 log_std_stream INFO: Standard error for task 5 will not be redirected.
+1781608227.300426 2026-06-16 13:10:27 MainProcess-75986 Task-Launch_0-6165393408 parsl.process_loggers:27 wrapped DEBUG: Normal ending for _launch_if_ready_async on thread Task-Launch_0
+1781608227.301521 2026-06-16 13:10:27 MainProcess-75986 HTEX-Result-Queue-Thread-6148567040 parsl.executors.high_throughput.zmq_pipes:189 get DEBUG: Receiving ResultsIncoming multipart message
+1781608227.301569 2026-06-16 13:10:27 MainProcess-75986 HTEX-Result-Queue-Thread-6148567040 parsl.dataflow.dflow:552 _update_task_state INFO: Task 5 changing state from launched to exec_done
+1781608227.301592 2026-06-16 13:10:27 MainProcess-75986 HTEX-Result-Queue-Thread-6148567040 parsl.dataflow.dflow:1209 log_std_stream INFO: Standard out for task 5 will not be redirected.
+1781608227.301611 2026-06-16 13:10:27 MainProcess-75986 HTEX-Result-Queue-Thread-6148567040 parsl.dataflow.dflow:1209 log_std_stream INFO: Standard error for task 5 will not be redirected.
+1781608227.634691 2026-06-16 13:10:27 MainProcess-75986 HTEX-Result-Queue-Thread-6148567040 parsl.executors.high_throughput.zmq_pipes:189 get DEBUG: Receiving ResultsIncoming multipart message
+1781608227.634871 2026-06-16 13:10:27 MainProcess-75986 HTEX-Result-Queue-Thread-6148567040 parsl.dataflow.dflow:552 _update_task_state INFO: Task 2 changing state from launched to exec_done
+1781608227.634930 2026-06-16 13:10:27 MainProcess-75986 HTEX-Result-Queue-Thread-6148567040 parsl.dataflow.dflow:1209 log_std_stream INFO: Standard out for task 2 will not be redirected.
+1781608227.634988 2026-06-16 13:10:27 MainProcess-75986 Task-Launch_0-6165393408 parsl.dataflow.memoization:379 check_memo DEBUG: Task 3 will not be memoized
+1781608227.635032 2026-06-16 13:10:27 MainProcess-75986 HTEX-Result-Queue-Thread-6148567040 parsl.dataflow.dflow:1209 log_std_stream INFO: Standard error for task 2 will not be redirected.
+1781608227.635083 2026-06-16 13:10:27 MainProcess-75986 Task-Launch_0-6165393408 parsl.executors.high_throughput.executor:717 submit DEBUG: Pushing function <function _prep_cast_column_data_types at 0x11b1f4540> to queue with args ()
+1781608227.635207 2026-06-16 13:10:27 MainProcess-75986 Task-Launch_0-6165393408 parsl.executors.high_throughput.zmq_pipes:148 put DEBUG: Sending TasksOutgoing message
+1781608227.635267 2026-06-16 13:10:27 MainProcess-75986 Task-Launch_0-6165393408 parsl.executors.high_throughput.zmq_pipes:150 put DEBUG: Sent TasksOutgoing message
+1781608227.635293 2026-06-16 13:10:27 MainProcess-75986 Task-Launch_0-6165393408 parsl.dataflow.dflow:552 _update_task_state INFO: Task 3 changing state from pending to launched
+1781608227.635314 2026-06-16 13:10:27 MainProcess-75986 Task-Launch_0-6165393408 parsl.dataflow.dflow:714 launch_task INFO: Parsl task 3 try 0 launched on executor htex_default_for_cytotable with executor id 6
+1781608227.635332 2026-06-16 13:10:27 MainProcess-75986 Task-Launch_0-6165393408 parsl.dataflow.dflow:1209 log_std_stream INFO: Standard out for task 3 will not be redirected.
+1781608227.635350 2026-06-16 13:10:27 MainProcess-75986 Task-Launch_0-6165393408 parsl.dataflow.dflow:1209 log_std_stream INFO: Standard error for task 3 will not be redirected.
+1781608227.635371 2026-06-16 13:10:27 MainProcess-75986 Task-Launch_0-6165393408 parsl.process_loggers:27 wrapped DEBUG: Normal ending for _launch_if_ready_async on thread Task-Launch_0
+1781608227.636652 2026-06-16 13:10:27 MainProcess-75986 HTEX-Result-Queue-Thread-6148567040 parsl.executors.high_throughput.zmq_pipes:189 get DEBUG: Receiving ResultsIncoming multipart message
+1781608227.636710 2026-06-16 13:10:27 MainProcess-75986 HTEX-Result-Queue-Thread-6148567040 parsl.dataflow.dflow:552 _update_task_state INFO: Task 3 changing state from launched to exec_done
+1781608227.636741 2026-06-16 13:10:27 MainProcess-75986 HTEX-Result-Queue-Thread-6148567040 parsl.dataflow.dflow:1209 log_std_stream INFO: Standard out for task 3 will not be redirected.
+1781608227.636770 2026-06-16 13:10:27 MainProcess-75986 HTEX-Result-Queue-Thread-6148567040 parsl.dataflow.dflow:1209 log_std_stream INFO: Standard error for task 3 will not be redirected.
+1781608227.636835 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:953 submit DEBUG: Task 6 will be sent to executor htex_default_for_cytotable
+1781608227.636878 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:761 _add_output_deps DEBUG: Adding output dependencies
+1781608227.636899 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:1002 submit DEBUG: Added output dependencies
+1781608227.636917 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:1011 submit DEBUG: Gathering dependencies
+1781608227.636937 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:1014 submit DEBUG: Gathered dependencies
+1781608227.636961 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:1026 submit INFO: Task 6 submitted for App _set_tablenumber, not waiting on any dependency
+1781608227.636979 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:1028 submit DEBUG: Task 6 has AppFuture: <AppFuture at 0x11b8a2480 state=pending>
+1781608227.637011 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:554 _update_task_state INFO: Task 6 initializing state to pending
+1781608227.637054 2026-06-16 13:10:27 MainProcess-75986 Task-Launch_0-6165393408 parsl.dataflow.memoization:379 check_memo DEBUG: Task 6 will not be memoized
+1781608227.637087 2026-06-16 13:10:27 MainProcess-75986 Task-Launch_0-6165393408 parsl.executors.high_throughput.executor:717 submit DEBUG: Pushing function <function _set_tablenumber at 0x11b1f47c0> to queue with args ()
+1781608227.637235 2026-06-16 13:10:27 MainProcess-75986 Task-Launch_0-6165393408 parsl.executors.high_throughput.zmq_pipes:148 put DEBUG: Sending TasksOutgoing message
+1781608227.637271 2026-06-16 13:10:27 MainProcess-75986 Task-Launch_0-6165393408 parsl.executors.high_throughput.zmq_pipes:150 put DEBUG: Sent TasksOutgoing message
+1781608227.637296 2026-06-16 13:10:27 MainProcess-75986 Task-Launch_0-6165393408 parsl.dataflow.dflow:552 _update_task_state INFO: Task 6 changing state from pending to launched
+1781608227.637315 2026-06-16 13:10:27 MainProcess-75986 Task-Launch_0-6165393408 parsl.dataflow.dflow:714 launch_task INFO: Parsl task 6 try 0 launched on executor htex_default_for_cytotable with executor id 7
+1781608227.637332 2026-06-16 13:10:27 MainProcess-75986 Task-Launch_0-6165393408 parsl.dataflow.dflow:1209 log_std_stream INFO: Standard out for task 6 will not be redirected.
+1781608227.637349 2026-06-16 13:10:27 MainProcess-75986 Task-Launch_0-6165393408 parsl.dataflow.dflow:1209 log_std_stream INFO: Standard error for task 6 will not be redirected.
+1781608227.637367 2026-06-16 13:10:27 MainProcess-75986 Task-Launch_0-6165393408 parsl.process_loggers:27 wrapped DEBUG: Normal ending for _launch_if_ready_async on thread Task-Launch_0
+1781608227.639012 2026-06-16 13:10:27 MainProcess-75986 HTEX-Result-Queue-Thread-6148567040 parsl.executors.high_throughput.zmq_pipes:189 get DEBUG: Receiving ResultsIncoming multipart message
+1781608227.639077 2026-06-16 13:10:27 MainProcess-75986 HTEX-Result-Queue-Thread-6148567040 parsl.dataflow.dflow:552 _update_task_state INFO: Task 6 changing state from launched to exec_done
+1781608227.639100 2026-06-16 13:10:27 MainProcess-75986 HTEX-Result-Queue-Thread-6148567040 parsl.dataflow.dflow:1209 log_std_stream INFO: Standard out for task 6 will not be redirected.
+1781608227.639126 2026-06-16 13:10:27 MainProcess-75986 HTEX-Result-Queue-Thread-6148567040 parsl.dataflow.dflow:1209 log_std_stream INFO: Standard error for task 6 will not be redirected.
+1781608227.639171 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:953 submit DEBUG: Task 7 will be sent to executor htex_default_for_cytotable
+1781608227.639241 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:761 _add_output_deps DEBUG: Adding output dependencies
+1781608227.639270 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:1002 submit DEBUG: Added output dependencies
+1781608227.639287 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:1011 submit DEBUG: Gathering dependencies
+1781608227.639310 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:1014 submit DEBUG: Gathered dependencies
+1781608227.639328 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:1026 submit INFO: Task 7 submitted for App _source_pageset_to_parquet, not waiting on any dependency
+1781608227.639346 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:1028 submit DEBUG: Task 7 has AppFuture: <AppFuture at 0x11b8a20c0 state=pending>
+1781608227.639366 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:554 _update_task_state INFO: Task 7 initializing state to pending
+1781608227.639406 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:953 submit DEBUG: Task 8 will be sent to executor htex_default_for_cytotable
+1781608227.639441 2026-06-16 13:10:27 MainProcess-75986 Task-Launch_0-6165393408 parsl.dataflow.memoization:379 check_memo DEBUG: Task 7 will not be memoized
+1781608227.639479 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:761 _add_output_deps DEBUG: Adding output dependencies
+1781608227.639518 2026-06-16 13:10:27 MainProcess-75986 Task-Launch_0-6165393408 parsl.executors.high_throughput.executor:717 submit DEBUG: Pushing function <function _source_pageset_to_parquet at 0x11b1f4cc0> to queue with args ()
+1781608227.639552 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:1002 submit DEBUG: Added output dependencies
+1781608227.639715 2026-06-16 13:10:27 MainProcess-75986 Task-Launch_0-6165393408 parsl.executors.high_throughput.zmq_pipes:148 put DEBUG: Sending TasksOutgoing message
+1781608227.639769 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:1011 submit DEBUG: Gathering dependencies
+1781608227.639857 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:1014 submit DEBUG: Gathered dependencies
+1781608227.639900 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:1026 submit INFO: Task 8 submitted for App _prepend_column_name, waiting on task 7
+1781608227.639931 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:1028 submit DEBUG: Task 8 has AppFuture: <AppFuture at 0x11b8a3d40 state=pending>
+1781608227.639958 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:554 _update_task_state INFO: Task 8 initializing state to pending
+1781608227.640003 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:953 submit DEBUG: Task 9 will be sent to executor htex_default_for_cytotable
+1781608227.640112 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:761 _add_output_deps DEBUG: Adding output dependencies
+1781608227.640139 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:1002 submit DEBUG: Added output dependencies
+1781608227.640160 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:1011 submit DEBUG: Gathering dependencies
+1781608227.640183 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:1014 submit DEBUG: Gathered dependencies
+1781608227.640197 2026-06-16 13:10:27 MainProcess-75986 Task-Launch_0-6165393408 parsl.executors.high_throughput.zmq_pipes:150 put DEBUG: Sent TasksOutgoing message
+1781608227.640225 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:1026 submit INFO: Task 9 submitted for App _source_pageset_to_parquet, not waiting on any dependency
+1781608227.640255 2026-06-16 13:10:27 MainProcess-75986 Task-Launch_0-6165393408 parsl.dataflow.dflow:552 _update_task_state INFO: Task 7 changing state from pending to launched
+1781608227.640306 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:1028 submit DEBUG: Task 9 has AppFuture: <AppFuture at 0x11b87f230 state=pending>
+1781608227.640331 2026-06-16 13:10:27 MainProcess-75986 Task-Launch_0-6165393408 parsl.dataflow.dflow:714 launch_task INFO: Parsl task 7 try 0 launched on executor htex_default_for_cytotable with executor id 8
+1781608227.640359 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:554 _update_task_state INFO: Task 9 initializing state to pending
+1781608227.640390 2026-06-16 13:10:27 MainProcess-75986 Task-Launch_0-6165393408 parsl.dataflow.dflow:1209 log_std_stream INFO: Standard out for task 7 will not be redirected.
+1781608227.640427 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:953 submit DEBUG: Task 10 will be sent to executor htex_default_for_cytotable
+1781608227.640449 2026-06-16 13:10:27 MainProcess-75986 Task-Launch_0-6165393408 parsl.dataflow.dflow:1209 log_std_stream INFO: Standard error for task 7 will not be redirected.
+1781608227.640506 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:761 _add_output_deps DEBUG: Adding output dependencies
+1781608227.640548 2026-06-16 13:10:27 MainProcess-75986 Task-Launch_0-6165393408 parsl.process_loggers:27 wrapped DEBUG: Normal ending for _launch_if_ready_async on thread Task-Launch_0
+1781608227.640587 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:1002 submit DEBUG: Added output dependencies
+1781608227.640626 2026-06-16 13:10:27 MainProcess-75986 Task-Launch_0-6165393408 parsl.dataflow.dflow:611 _launch_if_ready_async DEBUG: Task 8 has outstanding dependencies, so launch_if_ready skipping
+1781608227.640654 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:1011 submit DEBUG: Gathering dependencies
+1781608227.640677 2026-06-16 13:10:27 MainProcess-75986 Task-Launch_0-6165393408 parsl.process_loggers:27 wrapped DEBUG: Normal ending for _launch_if_ready_async on thread Task-Launch_0
+1781608227.640713 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:1014 submit DEBUG: Gathered dependencies
+1781608227.640753 2026-06-16 13:10:27 MainProcess-75986 Task-Launch_0-6165393408 parsl.dataflow.memoization:379 check_memo DEBUG: Task 9 will not be memoized
+1781608227.640777 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:1026 submit INFO: Task 10 submitted for App _prepend_column_name, waiting on task 9
+1781608227.640803 2026-06-16 13:10:27 MainProcess-75986 Task-Launch_0-6165393408 parsl.executors.high_throughput.executor:717 submit DEBUG: Pushing function <function _source_pageset_to_parquet at 0x11b1f4cc0> to queue with args ()
+1781608227.640829 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:1028 submit DEBUG: Task 10 has AppFuture: <AppFuture at 0x11b87c740 state=pending>
+1781608227.640977 2026-06-16 13:10:27 MainProcess-75986 Task-Launch_0-6165393408 parsl.executors.high_throughput.zmq_pipes:148 put DEBUG: Sending TasksOutgoing message
+1781608227.641011 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:554 _update_task_state INFO: Task 10 initializing state to pending
+1781608227.641043 2026-06-16 13:10:27 MainProcess-75986 Task-Launch_0-6165393408 parsl.executors.high_throughput.zmq_pipes:150 put DEBUG: Sent TasksOutgoing message
+1781608227.641114 2026-06-16 13:10:27 MainProcess-75986 Task-Launch_0-6165393408 parsl.dataflow.dflow:552 _update_task_state INFO: Task 9 changing state from pending to launched
+1781608227.641138 2026-06-16 13:10:27 MainProcess-75986 Task-Launch_0-6165393408 parsl.dataflow.dflow:714 launch_task INFO: Parsl task 9 try 0 launched on executor htex_default_for_cytotable with executor id 9
+1781608227.641159 2026-06-16 13:10:27 MainProcess-75986 Task-Launch_0-6165393408 parsl.dataflow.dflow:1209 log_std_stream INFO: Standard out for task 9 will not be redirected.
+1781608227.641177 2026-06-16 13:10:27 MainProcess-75986 Task-Launch_0-6165393408 parsl.dataflow.dflow:1209 log_std_stream INFO: Standard error for task 9 will not be redirected.
+1781608227.641197 2026-06-16 13:10:27 MainProcess-75986 Task-Launch_0-6165393408 parsl.process_loggers:27 wrapped DEBUG: Normal ending for _launch_if_ready_async on thread Task-Launch_0
+1781608227.641231 2026-06-16 13:10:27 MainProcess-75986 Task-Launch_0-6165393408 parsl.dataflow.dflow:611 _launch_if_ready_async DEBUG: Task 10 has outstanding dependencies, so launch_if_ready skipping
+1781608227.641249 2026-06-16 13:10:27 MainProcess-75986 Task-Launch_0-6165393408 parsl.process_loggers:27 wrapped DEBUG: Normal ending for _launch_if_ready_async on thread Task-Launch_0
+1781608227.644984 2026-06-16 13:10:27 MainProcess-75986 HTEX-Result-Queue-Thread-6148567040 parsl.executors.high_throughput.zmq_pipes:189 get DEBUG: Receiving ResultsIncoming multipart message
+1781608227.645134 2026-06-16 13:10:27 MainProcess-75986 HTEX-Result-Queue-Thread-6148567040 parsl.dataflow.dflow:552 _update_task_state INFO: Task 7 changing state from launched to exec_done
+1781608227.645299 2026-06-16 13:10:27 MainProcess-75986 HTEX-Result-Queue-Thread-6148567040 parsl.dataflow.dflow:1209 log_std_stream INFO: Standard out for task 7 will not be redirected.
+1781608227.645479 2026-06-16 13:10:27 MainProcess-75986 Task-Launch_0-6165393408 parsl.dataflow.memoization:379 check_memo DEBUG: Task 8 will not be memoized
+1781608227.645499 2026-06-16 13:10:27 MainProcess-75986 HTEX-Result-Queue-Thread-6148567040 parsl.dataflow.dflow:1209 log_std_stream INFO: Standard error for task 7 will not be redirected.
+1781608227.645547 2026-06-16 13:10:27 MainProcess-75986 Task-Launch_0-6165393408 parsl.executors.high_throughput.executor:717 submit DEBUG: Pushing function <function _prepend_column_name at 0x11b1f4f40> to queue with args ()
+1781608227.645661 2026-06-16 13:10:27 MainProcess-75986 Task-Launch_0-6165393408 parsl.executors.high_throughput.zmq_pipes:148 put DEBUG: Sending TasksOutgoing message
+1781608227.645709 2026-06-16 13:10:27 MainProcess-75986 Task-Launch_0-6165393408 parsl.executors.high_throughput.zmq_pipes:150 put DEBUG: Sent TasksOutgoing message
+1781608227.645732 2026-06-16 13:10:27 MainProcess-75986 Task-Launch_0-6165393408 parsl.dataflow.dflow:552 _update_task_state INFO: Task 8 changing state from pending to launched
+1781608227.645753 2026-06-16 13:10:27 MainProcess-75986 Task-Launch_0-6165393408 parsl.dataflow.dflow:714 launch_task INFO: Parsl task 8 try 0 launched on executor htex_default_for_cytotable with executor id 10
+1781608227.645772 2026-06-16 13:10:27 MainProcess-75986 Task-Launch_0-6165393408 parsl.dataflow.dflow:1209 log_std_stream INFO: Standard out for task 8 will not be redirected.
+1781608227.645789 2026-06-16 13:10:27 MainProcess-75986 Task-Launch_0-6165393408 parsl.dataflow.dflow:1209 log_std_stream INFO: Standard error for task 8 will not be redirected.
+1781608227.645810 2026-06-16 13:10:27 MainProcess-75986 Task-Launch_0-6165393408 parsl.process_loggers:27 wrapped DEBUG: Normal ending for _launch_if_ready_async on thread Task-Launch_0
+1781608227.646319 2026-06-16 13:10:27 MainProcess-75986 HTEX-Result-Queue-Thread-6148567040 parsl.executors.high_throughput.zmq_pipes:189 get DEBUG: Receiving ResultsIncoming multipart message
+1781608227.646365 2026-06-16 13:10:27 MainProcess-75986 HTEX-Result-Queue-Thread-6148567040 parsl.dataflow.dflow:552 _update_task_state INFO: Task 9 changing state from launched to exec_done
+1781608227.646394 2026-06-16 13:10:27 MainProcess-75986 HTEX-Result-Queue-Thread-6148567040 parsl.dataflow.dflow:1209 log_std_stream INFO: Standard out for task 9 will not be redirected.
+1781608227.646414 2026-06-16 13:10:27 MainProcess-75986 HTEX-Result-Queue-Thread-6148567040 parsl.dataflow.dflow:1209 log_std_stream INFO: Standard error for task 9 will not be redirected.
+1781608227.646448 2026-06-16 13:10:27 MainProcess-75986 Task-Launch_0-6165393408 parsl.dataflow.memoization:379 check_memo DEBUG: Task 10 will not be memoized
+1781608227.646512 2026-06-16 13:10:27 MainProcess-75986 Task-Launch_0-6165393408 parsl.executors.high_throughput.executor:717 submit DEBUG: Pushing function <function _prepend_column_name at 0x11b1f4f40> to queue with args ()
+1781608227.646580 2026-06-16 13:10:27 MainProcess-75986 Task-Launch_0-6165393408 parsl.executors.high_throughput.zmq_pipes:148 put DEBUG: Sending TasksOutgoing message
+1781608227.646612 2026-06-16 13:10:27 MainProcess-75986 Task-Launch_0-6165393408 parsl.executors.high_throughput.zmq_pipes:150 put DEBUG: Sent TasksOutgoing message
+1781608227.646633 2026-06-16 13:10:27 MainProcess-75986 Task-Launch_0-6165393408 parsl.dataflow.dflow:552 _update_task_state INFO: Task 10 changing state from pending to launched
+1781608227.646654 2026-06-16 13:10:27 MainProcess-75986 Task-Launch_0-6165393408 parsl.dataflow.dflow:714 launch_task INFO: Parsl task 10 try 0 launched on executor htex_default_for_cytotable with executor id 11
+1781608227.646678 2026-06-16 13:10:27 MainProcess-75986 Task-Launch_0-6165393408 parsl.dataflow.dflow:1209 log_std_stream INFO: Standard out for task 10 will not be redirected.
+1781608227.646696 2026-06-16 13:10:27 MainProcess-75986 Task-Launch_0-6165393408 parsl.dataflow.dflow:1209 log_std_stream INFO: Standard error for task 10 will not be redirected.
+1781608227.646715 2026-06-16 13:10:27 MainProcess-75986 Task-Launch_0-6165393408 parsl.process_loggers:27 wrapped DEBUG: Normal ending for _launch_if_ready_async on thread Task-Launch_0
+1781608227.647460 2026-06-16 13:10:27 MainProcess-75986 HTEX-Result-Queue-Thread-6148567040 parsl.executors.high_throughput.zmq_pipes:189 get DEBUG: Receiving ResultsIncoming multipart message
+1781608227.647510 2026-06-16 13:10:27 MainProcess-75986 HTEX-Result-Queue-Thread-6148567040 parsl.dataflow.dflow:552 _update_task_state INFO: Task 8 changing state from launched to exec_done
+1781608227.647540 2026-06-16 13:10:27 MainProcess-75986 HTEX-Result-Queue-Thread-6148567040 parsl.dataflow.dflow:1209 log_std_stream INFO: Standard out for task 8 will not be redirected.
+1781608227.647587 2026-06-16 13:10:27 MainProcess-75986 HTEX-Result-Queue-Thread-6148567040 parsl.dataflow.dflow:1209 log_std_stream INFO: Standard error for task 8 will not be redirected.
+1781608227.647811 2026-06-16 13:10:27 MainProcess-75986 HTEX-Result-Queue-Thread-6148567040 parsl.executors.high_throughput.zmq_pipes:189 get DEBUG: Receiving ResultsIncoming multipart message
+1781608227.647863 2026-06-16 13:10:27 MainProcess-75986 HTEX-Result-Queue-Thread-6148567040 parsl.dataflow.dflow:552 _update_task_state INFO: Task 10 changing state from launched to exec_done
+1781608227.647894 2026-06-16 13:10:27 MainProcess-75986 HTEX-Result-Queue-Thread-6148567040 parsl.dataflow.dflow:1209 log_std_stream INFO: Standard out for task 10 will not be redirected.
+1781608227.647920 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:953 submit DEBUG: Task 11 will be sent to executor htex_default_for_cytotable
+1781608227.647941 2026-06-16 13:10:27 MainProcess-75986 HTEX-Result-Queue-Thread-6148567040 parsl.dataflow.dflow:1209 log_std_stream INFO: Standard error for task 10 will not be redirected.
+1781608227.647983 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:761 _add_output_deps DEBUG: Adding output dependencies
+1781608227.648033 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:1002 submit DEBUG: Added output dependencies
+1781608227.648052 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:1011 submit DEBUG: Gathering dependencies
+1781608227.648074 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:1014 submit DEBUG: Gathered dependencies
+1781608227.648093 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:1026 submit INFO: Task 11 submitted for App _infer_source_group_common_schema, not waiting on any dependency
+1781608227.648112 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:1028 submit DEBUG: Task 11 has AppFuture: <AppFuture at 0x11b87e270 state=pending>
+1781608227.648134 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:554 _update_task_state INFO: Task 11 initializing state to pending
+1781608227.648174 2026-06-16 13:10:27 MainProcess-75986 Task-Launch_0-6165393408 parsl.dataflow.memoization:379 check_memo DEBUG: Task 11 will not be memoized
+1781608227.648198 2026-06-16 13:10:27 MainProcess-75986 Task-Launch_0-6165393408 parsl.executors.high_throughput.executor:717 submit DEBUG: Pushing function <function _infer_source_group_common_schema at 0x11b1f5c60> to queue with args ()
+1781608227.648343 2026-06-16 13:10:27 MainProcess-75986 Task-Launch_0-6165393408 parsl.executors.high_throughput.zmq_pipes:148 put DEBUG: Sending TasksOutgoing message
+1781608227.648374 2026-06-16 13:10:27 MainProcess-75986 Task-Launch_0-6165393408 parsl.executors.high_throughput.zmq_pipes:150 put DEBUG: Sent TasksOutgoing message
+1781608227.648402 2026-06-16 13:10:27 MainProcess-75986 Task-Launch_0-6165393408 parsl.dataflow.dflow:552 _update_task_state INFO: Task 11 changing state from pending to launched
+1781608227.648422 2026-06-16 13:10:27 MainProcess-75986 Task-Launch_0-6165393408 parsl.dataflow.dflow:714 launch_task INFO: Parsl task 11 try 0 launched on executor htex_default_for_cytotable with executor id 12
+1781608227.648440 2026-06-16 13:10:27 MainProcess-75986 Task-Launch_0-6165393408 parsl.dataflow.dflow:1209 log_std_stream INFO: Standard out for task 11 will not be redirected.
+1781608227.648457 2026-06-16 13:10:27 MainProcess-75986 Task-Launch_0-6165393408 parsl.dataflow.dflow:1209 log_std_stream INFO: Standard error for task 11 will not be redirected.
+1781608227.648475 2026-06-16 13:10:27 MainProcess-75986 Task-Launch_0-6165393408 parsl.process_loggers:27 wrapped DEBUG: Normal ending for _launch_if_ready_async on thread Task-Launch_0
+1781608227.650462 2026-06-16 13:10:27 MainProcess-75986 HTEX-Result-Queue-Thread-6148567040 parsl.executors.high_throughput.zmq_pipes:189 get DEBUG: Receiving ResultsIncoming multipart message
+1781608227.650539 2026-06-16 13:10:27 MainProcess-75986 HTEX-Result-Queue-Thread-6148567040 parsl.dataflow.dflow:552 _update_task_state INFO: Task 11 changing state from launched to exec_done
+1781608227.650565 2026-06-16 13:10:27 MainProcess-75986 HTEX-Result-Queue-Thread-6148567040 parsl.dataflow.dflow:1209 log_std_stream INFO: Standard out for task 11 will not be redirected.
+1781608227.650589 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:953 submit DEBUG: Task 12 will be sent to executor htex_default_for_cytotable
+1781608227.650609 2026-06-16 13:10:27 MainProcess-75986 HTEX-Result-Queue-Thread-6148567040 parsl.dataflow.dflow:1209 log_std_stream INFO: Standard error for task 11 will not be redirected.
+1781608227.650652 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:761 _add_output_deps DEBUG: Adding output dependencies
+1781608227.650708 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:1002 submit DEBUG: Added output dependencies
+1781608227.650728 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:1011 submit DEBUG: Gathering dependencies
+1781608227.650750 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:1014 submit DEBUG: Gathered dependencies
+1781608227.650768 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:1026 submit INFO: Task 12 submitted for App _concat_source_group, not waiting on any dependency
+1781608227.650787 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:1028 submit DEBUG: Task 12 has AppFuture: <AppFuture at 0x11b87ec30 state=pending>
+1781608227.650811 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:554 _update_task_state INFO: Task 12 initializing state to pending
+1781608227.650853 2026-06-16 13:10:27 MainProcess-75986 Task-Launch_0-6165393408 parsl.dataflow.memoization:379 check_memo DEBUG: Task 12 will not be memoized
+1781608227.650879 2026-06-16 13:10:27 MainProcess-75986 Task-Launch_0-6165393408 parsl.executors.high_throughput.executor:717 submit DEBUG: Pushing function <function _concat_source_group at 0x11b1f51c0> to queue with args ()
+1781608227.651126 2026-06-16 13:10:27 MainProcess-75986 Task-Launch_0-6165393408 parsl.executors.high_throughput.zmq_pipes:148 put DEBUG: Sending TasksOutgoing message
+1781608227.651170 2026-06-16 13:10:27 MainProcess-75986 Task-Launch_0-6165393408 parsl.executors.high_throughput.zmq_pipes:150 put DEBUG: Sent TasksOutgoing message
+1781608227.651194 2026-06-16 13:10:27 MainProcess-75986 Task-Launch_0-6165393408 parsl.dataflow.dflow:552 _update_task_state INFO: Task 12 changing state from pending to launched
+1781608227.651214 2026-06-16 13:10:27 MainProcess-75986 Task-Launch_0-6165393408 parsl.dataflow.dflow:714 launch_task INFO: Parsl task 12 try 0 launched on executor htex_default_for_cytotable with executor id 13
+1781608227.651237 2026-06-16 13:10:27 MainProcess-75986 Task-Launch_0-6165393408 parsl.dataflow.dflow:1209 log_std_stream INFO: Standard out for task 12 will not be redirected.
+1781608227.651254 2026-06-16 13:10:27 MainProcess-75986 Task-Launch_0-6165393408 parsl.dataflow.dflow:1209 log_std_stream INFO: Standard error for task 12 will not be redirected.
+1781608227.651273 2026-06-16 13:10:27 MainProcess-75986 Task-Launch_0-6165393408 parsl.process_loggers:27 wrapped DEBUG: Normal ending for _launch_if_ready_async on thread Task-Launch_0
+1781608227.678760 2026-06-16 13:10:27 MainProcess-75986 HTEX-Result-Queue-Thread-6148567040 parsl.executors.high_throughput.zmq_pipes:189 get DEBUG: Receiving ResultsIncoming multipart message
+1781608227.678912 2026-06-16 13:10:27 MainProcess-75986 HTEX-Result-Queue-Thread-6148567040 parsl.dataflow.dflow:552 _update_task_state INFO: Task 12 changing state from launched to exec_done
+1781608227.678953 2026-06-16 13:10:27 MainProcess-75986 HTEX-Result-Queue-Thread-6148567040 parsl.dataflow.dflow:1209 log_std_stream INFO: Standard out for task 12 will not be redirected.
+1781608227.679004 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:1134 cleanup INFO: DFK cleanup initiated
+1781608227.679030 2026-06-16 13:10:27 MainProcess-75986 HTEX-Result-Queue-Thread-6148567040 parsl.dataflow.dflow:1209 log_std_stream INFO: Standard error for task 12 will not be redirected.
+1781608227.679089 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:1068 log_task_states INFO: Summary of tasks in DFK:
+1781608227.679145 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:1072 log_task_states INFO: Tasks in state States.pending: 0
+1781608227.679170 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:1072 log_task_states INFO: Tasks in state States.running: 0
+1781608227.679189 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:1072 log_task_states INFO: Tasks in state States.exec_done: 13
+1781608227.679208 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:1072 log_task_states INFO: Tasks in state States.failed: 0
+1781608227.679229 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:1072 log_task_states INFO: Tasks in state States.dep_fail: 0
+1781608227.679249 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:1072 log_task_states INFO: Tasks in state States.launched: 0
+1781608227.679270 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:1072 log_task_states INFO: Tasks in state States.fail_retryable: 0
+1781608227.679292 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:1072 log_task_states INFO: Tasks in state States.memo_done: 0
+1781608227.679311 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:1072 log_task_states INFO: Tasks in state States.joining: 0
+1781608227.679331 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:1072 log_task_states INFO: Tasks in state States.running_ended: 0
+1781608227.679352 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:1074 log_task_states INFO: End of summary
+1781608227.679379 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:1151 cleanup INFO: Closing job status poller
+1781608227.679444 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.jobs.job_status_poller:38 close INFO: Scaling in executor htex_default_for_cytotable
+1781608227.679473 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.executors.high_throughput.executor:823 scale_in DEBUG: Scale in called, blocks=1
+1781608227.679898 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.executors.high_throughput.zmq_pipes:77 run DEBUG: Sending command client command
+1781608227.679963 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.executors.high_throughput.zmq_pipes:104 run DEBUG: Receiving command client response
+1781608227.680245 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.executors.high_throughput.zmq_pipes:106 run DEBUG: Received command client response
+1781608227.680276 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.executors.high_throughput.executor:857 scale_in DEBUG: Scale in selecting from 1 blocks
+1781608227.680298 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.executors.high_throughput.zmq_pipes:77 run DEBUG: Sending command client command
+1781608227.680322 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.executors.high_throughput.zmq_pipes:104 run DEBUG: Receiving command client response
+1781608227.680498 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.executors.high_throughput.zmq_pipes:106 run DEBUG: Received command client response
+1781608227.680546 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.executors.high_throughput.executor:690 _hold_block DEBUG: Sending hold to manager: d9e1c65dbd6a
+1781608227.680574 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.executors.high_throughput.zmq_pipes:77 run DEBUG: Sending command client command
+1781608227.680606 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.executors.high_throughput.zmq_pipes:104 run DEBUG: Receiving command client response
+1781608227.680929 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.executors.high_throughput.zmq_pipes:106 run DEBUG: Received command client response
+1781608227.680966 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.executors.high_throughput.executor:649 _hold_manager DEBUG: Sent hold request to manager: d9e1c65dbd6a
+1781608227.681001 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.providers.local.local:256 cancel DEBUG: Terminating job/process ID: 76041
+1781608227.681029 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.utils:498 execute_wait DEBUG: Creating process with command 'kill -- -$(ps -o pgid= 76041 | grep -o '[0-9]*')'
+1781608227.688893 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.utils:506 execute_wait DEBUG: Created process with pid 76057. Performing communicate
+1781608227.697499 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.utils:509 execute_wait DEBUG: Process 76057 returned 0
+1781608227.697617 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.utils:515 execute_wait DEBUG: Execution of command in process 76057 completed normally
+1781608227.697724 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.executors.status_handling:364 scale_in_facade DEBUG: Marking block 0 as SCALED_IN
+1781608227.697791 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:1153 cleanup INFO: Terminated job status poller
+1781608227.697821 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:1155 cleanup INFO: Shutting down executors
+1781608227.697849 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:1158 cleanup INFO: Shutting down executor htex_default_for_cytotable
+1781608227.697891 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.executors.high_throughput.executor:928 shutdown INFO: Attempting HighThroughputExecutor shutdown
+1781608227.697915 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.executors.high_throughput.executor:930 shutdown INFO: Terminating interchange and result queue thread
+1781608227.705247 2026-06-16 13:10:27 MainProcess-75986 HTEX-Result-Queue-Thread-6148567040 parsl.executors.high_throughput.executor:567 _result_queue_worker INFO: Closing result ZMQ pipe
+1781608227.706525 2026-06-16 13:10:27 MainProcess-75986 HTEX-Result-Queue-Thread-6148567040 parsl.executors.high_throughput.executor:569 _result_queue_worker INFO: Result queue worker finished
+1781608227.706626 2026-06-16 13:10:27 MainProcess-75986 HTEX-Result-Queue-Thread-6148567040 parsl.process_loggers:27 wrapped DEBUG: Normal ending for _result_queue_worker on thread HTEX-Result-Queue-Thread
+1781608227.715059 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.executors.high_throughput.executor:939 shutdown INFO: Closing ZMQ pipes
+1781608227.715123 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.executors.high_throughput.executor:949 shutdown INFO: Closing outgoing_q
+1781608227.715308 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.executors.high_throughput.executor:953 shutdown INFO: Closing command client
+1781608227.715472 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.executors.high_throughput.executor:956 shutdown INFO: Waiting for result queue thread exit
+1781608227.715510 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.executors.high_throughput.executor:965 shutdown INFO: Finished HighThroughputExecutor shutdown attempt
+1781608227.715532 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:1160 cleanup INFO: Shut down executor htex_default_for_cytotable
+1781608227.715558 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:1158 cleanup INFO: Shutting down executor _parsl_internal
+1781608227.715586 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.executors.threads:84 shutdown DEBUG: Shutting down executor, which involves waiting for running tasks to complete
+1781608227.715617 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.executors.threads:89 shutdown DEBUG: Done with executor shutdown
+1781608227.715636 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:1160 cleanup INFO: Shut down executor _parsl_internal
+1781608227.715653 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:1162 cleanup INFO: Terminated executors
+1781608227.715678 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:1179 cleanup INFO: Terminating task launch pool
+1781608227.715737 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:1181 cleanup INFO: Terminated task launch pool
+1781608227.715755 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:1183 cleanup INFO: Unregistering atexit hook
+1781608227.715780 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:1185 cleanup INFO: Unregistered atexit hook
+1781608227.715798 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:1188 cleanup INFO: Unregistering default DFK
+1781608227.715821 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:1190 cleanup INFO: Unregistered default DFK
+1781608227.715839 2026-06-16 13:10:27 MainProcess-75986 MainThread-8399593088 parsl.dataflow.dflow:1195 cleanup INFO: Unregistering log handler

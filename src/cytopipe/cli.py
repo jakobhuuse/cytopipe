@@ -1,10 +1,16 @@
 from pathlib import Path
-from typing import Annotated
+from typing import Annotated, Any
 
 import typer
+from cytotable import convert
+from cytotable.exceptions import CytoTableException
 
-from cytopipe.bridge import run_bridge
-from cytopipe.bridge.platemap import PLATEMAP_COLS, PLATEMAP_PLATE_COL, PLATEMAP_WELL_COL
+from cytopipe.cellprofiler_deepprofiler import bridge
+from cytopipe.cellprofiler_deepprofiler.platemap import (
+    PLATEMAP_COLS,
+    PLATEMAP_PLATE_COL,
+    PLATEMAP_WELL_COL,
+)
 
 app = typer.Typer(
     name="cytopipe",
@@ -14,26 +20,62 @@ app = typer.Typer(
 )
 
 
-def _not_implemented(command: str) -> int:
-    typer.secho(f"cytopipe {command}: not implemented yet.", fg=typer.colors.YELLOW)
-    return 1
+def _convert_to_parquet(
+    command: str,
+    source_path: Path,
+    dest_path: Path,
+    preset: str,
+    **convert_kwargs: Any,
+) -> None:
+    """Run a CytoTable conversion and report the outcome, exiting non-zero on failure."""
+    try:
+        convert(
+            source_path=str(source_path),
+            dest_path=str(dest_path),
+            dest_datatype="parquet",
+            preset=preset,
+            **convert_kwargs,
+        )
+    except (FileNotFoundError, CytoTableException) as exception:
+        typer.secho(f"{command} failed: {exception}", fg=typer.colors.RED)
+        raise typer.Exit(1) from exception
+
+    typer.secho(f"{source_path} → {dest_path}", fg=typer.colors.GREEN)
 
 
 @app.command()
-def convert(
+def cellprofiler_parquet(
     source_path: Annotated[
-        Path, typer.Argument(help="CellProfiler output to convert (SQLite/CSV directory).")
+        Path,
+        typer.Argument(help="CellProfiler SQLite output to convert.", exists=True),
     ],
     dest_path: Annotated[Path, typer.Argument(help="Destination single-cell parquet path.")],
-    preset: Annotated[
-        str, typer.Option(help="CytoTable source preset describing the input layout.")
-    ] = "cellprofiler_sqlite_pycytominer",
 ) -> None:
-    raise typer.Exit(_not_implemented("convert"))
+    """Convert CellProfiler SQLite output into single-cell parquet (CytoTable)."""
+    _convert_to_parquet("cellprofiler-parquet", source_path, dest_path, "cellprofiler_sqlite")
 
 
 @app.command()
-def bridge(
+def deepprofiler_parquet(
+    source_path: Annotated[
+        Path,
+        typer.Argument(help="DeepProfiler single-cell output to convert.", exists=True),
+    ],
+    dest_path: Annotated[Path, typer.Argument(help="Destination single-cell parquet path.")],
+) -> None:
+    """Convert DeepProfiler single-cell output into parquet (CytoTable)."""
+    _convert_to_parquet(
+        "deepprofiler-parquet",
+        source_path,
+        dest_path,
+        "deepprofiler",
+        source_datatype="npz",
+        join=False,
+    )
+
+
+@app.command()
+def cellprofiler_deepprofiler(
     source_path: Annotated[
         Path,
         typer.Argument(
@@ -59,13 +101,14 @@ def bridge(
         str, typer.Option(help="Plate-map column to join on well.")
     ] = PLATEMAP_WELL_COL,
     platemap_cols: Annotated[
-        str | None,
+        str,
         typer.Option(help="Comma-separated plate-map columns to carry into index.csv."),
-    ] = None,
+    ] = ",".join(PLATEMAP_COLS),
 ) -> None:
-    cols = tuple(c.strip() for c in platemap_cols.split(",")) if platemap_cols else PLATEMAP_COLS
+    """Build DeepProfiler metadata from CellProfiler output."""
+    cols = tuple(c.strip() for c in platemap_cols.split(",") if c.strip())
     try:
-        result = run_bridge(
+        result = bridge(
             source_path,
             dest_path,
             platemap,
