@@ -29,3 +29,6 @@ CLAUDE.md
 
 # Dev
 results/
+
+# Parsl run artifacts (logs + ephemeral ZMQ certs) emitted by cytotable conversions
+runinfo/

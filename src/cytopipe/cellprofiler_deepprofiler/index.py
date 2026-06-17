@@ -2,8 +2,7 @@ from pathlib import Path
 
 import pandas as pd
 
-# Fixed by the Cell Painting CNN model (DeepProfiler handbook §6.2. NOT configurable.
-# NB! Might be changed for a future release of DeepProfiler
+# Channel order is fixed by the Cell Painting CNN model, not configurable.
 CHANNEL_ORDER = ["DNA", "RNA", "ER", "AGP", "Mito"]
 
 METADATA_PLATE = "Metadata_Plate"
@@ -19,42 +18,38 @@ def read_image_table(path: Path) -> pd.DataFrame:
 
 
 def build_index(image_table: pd.DataFrame, plate: str) -> pd.DataFrame:
-    """
-    Builds and returns metadata dataframe created from image table.
-    """
-    out = pd.DataFrame()
-    out[METADATA_PLATE] = image_table[METADATA_PLATE] if METADATA_PLATE in image_table else plate
-    out[METADATA_WELL] = image_table[METADATA_WELL].astype(str).str.strip()
-    out[METADATA_SITE] = image_table[METADATA_SITE]
+    """Build the DeepProfiler index (metadata + per-channel image paths) from the Image table."""
+    missing = [c for c in CHANNEL_ORDER if f"FileName_Orig{c}" not in image_table.columns]
+    if missing:
+        raise KeyError(
+            f"Image table is missing required column(s) "
+            f"{', '.join(f'FileName_Orig{c}' for c in missing)}. Ensure CellProfiler's "
+            f"ExportToSpreadsheet emits FileName_Orig{{{','.join(CHANNEL_ORDER)}}} columns."
+        )
 
+    cols = {
+        METADATA_PLATE: image_table[METADATA_PLATE] if METADATA_PLATE in image_table else plate,
+        METADATA_WELL: image_table[METADATA_WELL].astype(str).str.strip(),
+        METADATA_SITE: image_table[METADATA_SITE],
+    }
     for channel in CHANNEL_ORDER:
-        col = f"FileName_Orig{channel}"
-        if col not in image_table.columns:
-            raise KeyError(
-                f"Image table is missing required column {col!r}. "
-                f"Ensure CellProfiler's ExportToSpreadsheet emits the Image table with "
-                f"FileName_Orig{{{','.join(CHANNEL_ORDER)}}} columns."
-            )
+        # CellProfiler records ".tif" originals; DeepProfiler reads the ".tiff" it saves.
+        stem = image_table[f"FileName_Orig{channel}"].astype(str).str.strip().str.rsplit(".", n=1)
+        cols[channel] = plate + "/" + stem.str[0] + ".tiff"
 
-        # Replace the file extension ".tif" for ".tiff"
-        stem = image_table[col].astype(str).str.strip().str.rsplit(".", n=1).str[0]
-        out[channel] = plate + "/" + stem + ".tiff"
-
-    # Deterministic ordering
-    site = pd.to_numeric(out[METADATA_SITE], errors="coerce")
     return (
-        out.assign(_site=site)
-        .sort_values([METADATA_WELL, "_site"], kind="stable")
-        .drop(columns="_site")
+        pd.DataFrame(cols)
+        .sort_values(
+            [METADATA_WELL, METADATA_SITE],
+            key=lambda c: pd.to_numeric(c, errors="coerce") if c.name == METADATA_SITE else c,
+            kind="stable",
+        )
         .reset_index(drop=True)
     )
 
 
 def write_index(index: pd.DataFrame, dest_dir: Path) -> Path:
-    """
-    Write ``dest/metadata/index.csv``.
-    Returns the path written.
-    """
+    """Write the index to ``dest/metadata/index.csv`` and return the path."""
     out = Path(dest_dir) / "metadata" / "index.csv"
     out.parent.mkdir(parents=True, exist_ok=True)
     index.to_csv(out, index=False)

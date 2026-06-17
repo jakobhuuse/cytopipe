@@ -20,6 +20,16 @@ app = typer.Typer(
 )
 
 
+def _run_conversion(label: str, convert_fn, source_path: Path, dest_path: Path) -> None:
+    """Run a CytoTable conversion, reporting success/failure and exiting non-zero on error."""
+    try:
+        convert_fn(source_path, dest_path)
+    except (FileNotFoundError, CytoTableException) as exception:
+        typer.secho(f"{label} failed: {exception}", fg=typer.colors.RED)
+        raise typer.Exit(1) from exception
+    typer.secho(f"{source_path} → {dest_path}", fg=typer.colors.GREEN)
+
+
 @app.command()
 def cellprofiler_parquet(
     source_path: Annotated[
@@ -29,12 +39,7 @@ def cellprofiler_parquet(
     dest_path: Annotated[Path, typer.Argument(help="Destination single-cell parquet path.")],
 ) -> None:
     """Convert CellProfiler SQLite output into single-cell parquet (CytoTable)."""
-    try:
-        cellprofiler_to_parquet(source_path, dest_path)
-    except (FileNotFoundError, CytoTableException) as exception:
-        typer.secho(f"cellprofiler-parquet failed: {exception}", fg=typer.colors.RED)
-        raise typer.Exit(1) from exception
-    typer.secho(f"{source_path} → {dest_path}", fg=typer.colors.GREEN)
+    _run_conversion("cellprofiler-parquet", cellprofiler_to_parquet, source_path, dest_path)
 
 
 @app.command()
@@ -46,12 +51,7 @@ def deepprofiler_parquet(
     dest_path: Annotated[Path, typer.Argument(help="Destination single-cell parquet path.")],
 ) -> None:
     """Convert DeepProfiler single-cell output into a single per-plate parquet (CytoTable)."""
-    try:
-        deepprofiler_to_parquet(source_path, dest_path)
-    except (FileNotFoundError, CytoTableException) as exception:
-        typer.secho(f"deepprofiler-parquet failed: {exception}", fg=typer.colors.RED)
-        raise typer.Exit(1) from exception
-    typer.secho(f"{source_path} → {dest_path}", fg=typer.colors.GREEN)
+    _run_conversion("deepprofiler-parquet", deepprofiler_to_parquet, source_path, dest_path)
 
 
 @app.command()

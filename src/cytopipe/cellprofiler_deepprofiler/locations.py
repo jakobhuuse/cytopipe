@@ -14,9 +14,7 @@ _WRITE_OPTS = pacsv.WriteOptions(quoting_header="none")
 
 
 def clean_nuclei_locations(table: pa.Table, as_int: bool = True) -> pa.Table:
-    """
-    Keep the two center columns, rename them, optionally round to int.
-    """
+    """Keep the two center columns, rename to DeepProfiler names, optionally round to int."""
     x, y = table.column(SRC_X), table.column(SRC_Y)
     if as_int:
         x = pc.cast(pc.round(x), pa.int64())
@@ -25,21 +23,14 @@ def clean_nuclei_locations(table: pa.Table, as_int: bool = True) -> pa.Table:
 
 
 def convert_locations_tree(measurement_dir: Path, dest_dir: Path, plate: str) -> int:
-    """
-    Walk ``measurement/locations/*-Nuclei.csv`` and convert to ``dest/locations/{plate}/``
-    DeepProfiler input, one file at a time.
-
-    Returns the number of location files touched.
-
-    TODO: Add parallellization if there is need for it
-    """
+    """Convert ``measurement/locations/*-Nuclei.csv`` to DeepProfiler input under
+    ``dest/locations/{plate}/``; return the number of files written."""
     src_dir = Path(measurement_dir) / "locations"
     out_dir = Path(dest_dir) / "locations" / plate
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    count = 0
-    for src in sorted(src_dir.glob("*-Nuclei.csv")):
+    sources = sorted(src_dir.glob("*-Nuclei.csv"))
+    for src in sources:
         table = pacsv.read_csv(src, convert_options=_READ_ONLY_LOCATION_COLS)
         pacsv.write_csv(clean_nuclei_locations(table), out_dir / src.name, _WRITE_OPTS)
-        count += 1
-    return count
+    return len(sources)

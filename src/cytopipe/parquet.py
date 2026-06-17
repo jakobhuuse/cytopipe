@@ -1,3 +1,4 @@
+import os
 import tempfile
 from contextlib import closing
 from pathlib import Path
@@ -7,6 +8,14 @@ import duckdb
 from cytotable import convert
 from parsl.config import Config
 from parsl.executors import ThreadPoolExecutor
+
+
+def _available_cpus() -> int:
+    """CPUs this process may actually use (respects SLURM/cgroup cpuset on Linux)."""
+    try:
+        return len(os.sched_getaffinity(0))
+    except AttributeError:  # not Linux
+        return os.cpu_count() or 1
 
 
 def convert_to_parquet(
@@ -20,11 +29,11 @@ def convert_to_parquet(
         source_path=str(source_path),
         dest_path=str(dest_path),
         dest_datatype="parquet",
-        preset=preset,
         # CytoTable defaults to a HighThroughputExecutor, whose worker pool +
-        # ZMQ interchange deadlocks under amd64 qemu emulation and oversubscribes
-        # a scheduler's cgroup. Run in-process instead.
-        parsl_config=Config(executors=[ThreadPoolExecutor(max_threads=None)]),
+        # ZMQ interchange deadlocks under amd64 qemu emulation. Run in-process, and
+        # cap threads at the allocated CPUs so we don't oversubscribe a scheduler's cgroup.
+        parsl_config=Config(executors=[ThreadPoolExecutor(max_threads=_available_cpus())]),
+        preset=preset,
         **convert_kwargs,
     )
 

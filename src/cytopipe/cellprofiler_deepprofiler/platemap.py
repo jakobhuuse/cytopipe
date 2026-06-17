@@ -4,9 +4,7 @@ import pandas as pd
 
 from .index import METADATA_PLATE, METADATA_WELL
 
-# Defaults for the project plate map.
-# Join keys against the index's Metadata_Plate/Well, and add annotation columns.
-# Override only as a special case if a different plate map is used.
+# Project plate-map defaults: columns to join on (plate/well) and annotations to carry over.
 PLATEMAP_PLATE_COL = "Metadata_PlateID"
 PLATEMAP_WELL_COL = "Metadata_DestinationWell"
 PLATEMAP_COLS = ("Metadata_Compound", "Metadata_Batch")
@@ -20,10 +18,7 @@ def load_platemap(path: Path) -> pd.DataFrame:
 
 
 def _merge_keys(plate_col: str | None, well_col: str) -> tuple[list[str], list[str]]:
-    """
-    Create aligned (index-side, platemap-side) join keys.
-    Plate optional, well always included.
-    """
+    """Aligned (index-side, platemap-side) join keys; plate optional, well always included."""
     left, right = [], []
     if plate_col:
         left.append(METADATA_PLATE)
@@ -42,11 +37,8 @@ def unmatched_wells(
     """Return the index join-keys (as strings) that have no row in the plate map."""
     left, right = _merge_keys(plate_col, well_col)
     have = set(map(tuple, platemap[right].astype(str).itertuples(index=False, name=None)))
-    missing = []
-    for keys in index[left].astype(str).itertuples(index=False, name=None):
-        if keys not in have:
-            missing.append("/".join(keys))
-    return sorted(set(missing))
+    keys = index[left].astype(str).itertuples(index=False, name=None)
+    return sorted({"/".join(k) for k in keys if k not in have})
 
 
 def join_platemap(
@@ -56,12 +48,7 @@ def join_platemap(
     well_col: str,
     cols: tuple[str, ...] | None,
 ) -> pd.DataFrame:
-    """
-    Left-join of plate-map columns onto the index on the plate/well key(s).
-
-    ``cols`` restricts which plate-map columns are carried into the index (the join keys are
-    always included).
-    """
+    """Left-join plate-map ``cols`` onto the index by plate/well key(s) (join keys always kept)."""
     left, right = _merge_keys(plate_col, well_col)
     if cols is not None:
         missing = [c for c in [*right, *cols] if c not in platemap.columns]
@@ -69,12 +56,9 @@ def join_platemap(
             raise KeyError(f"Plate map is missing requested column(s): {', '.join(missing)}")
         platemap = platemap[[*right, *cols]]
 
-    index = index.copy()
-    platemap = platemap.copy()
-    for col in left:
-        index[col] = index[col].astype(str)
-    for col in right:
-        platemap[col] = platemap[col].astype(str)
+    # astype with a column→dtype map returns a fresh frame, so callers are left untouched.
+    index = index.astype({col: str for col in left})
+    platemap = platemap.astype({col: str for col in right})
 
     merged = index.merge(
         platemap,

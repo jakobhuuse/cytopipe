@@ -45,7 +45,7 @@ def test_clean_nuclei_locations_no_round_keeps_float():
 
 
 def test_build_index_uses_named_channel_columns_in_fixed_order():
-    image_table = pd.read_csv(MEASUREMENT / "image.csv", skipinitialspace=True)
+    image_table = pd.read_csv(MEASUREMENT / "Image.csv", skipinitialspace=True)
     index = build_index(image_table, plate="26159")
 
     assert list(index.columns) == [
@@ -62,7 +62,7 @@ def test_build_index_uses_named_channel_columns_in_fixed_order():
 
 
 def test_build_index_sorted_by_well_then_site():
-    image_table = pd.read_csv(MEASUREMENT / "image.csv", skipinitialspace=True)
+    image_table = pd.read_csv(MEASUREMENT / "Image.csv", skipinitialspace=True)
     index = build_index(image_table, plate="26159")
     assert index["Metadata_Site"].tolist() == [1, 2]
 
