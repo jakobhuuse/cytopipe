@@ -5,7 +5,7 @@ from pathlib import Path
 import duckdb
 import pytest
 
-from cytopipe.parquet import concat_parquets
+from cytopipe.conversion.parquet import concat_parquets
 
 
 def _write_parquet(con: duckdb.DuckDBPyConnection, path: Path, columns, rows) -> None:

@@ -10,7 +10,7 @@ from cytopipe.cellprofiler_deepprofiler.platemap import (
     PLATEMAP_PLATE_COL,
     PLATEMAP_WELL_COL,
 )
-from cytopipe.parquet import cellprofiler_to_parquet, deepprofiler_to_parquet
+from cytopipe.conversion.parquet import cellprofiler_to_parquet, deepprofiler_to_parquet
 
 app = typer.Typer(
     name="cytopipe",
