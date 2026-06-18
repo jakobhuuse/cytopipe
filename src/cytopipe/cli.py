@@ -1,16 +1,9 @@
-from pathlib import Path
-from typing import Annotated
+"""cytopipe command-line interface — composes each package's Typer app/commands."""
 
 import typer
-from cytotable.exceptions import CytoTableException
 
-from cytopipe.cellprofiler_deepprofiler import bridge
-from cytopipe.cellprofiler_deepprofiler.platemap import (
-    PLATEMAP_COLS,
-    PLATEMAP_PLATE_COL,
-    PLATEMAP_WELL_COL,
-)
-from cytopipe.conversion.parquet import cellprofiler_to_parquet, deepprofiler_to_parquet
+from cytopipe.bridge.cli import bridge_command
+from cytopipe.conversion.cli import app as convert_app
 
 app = typer.Typer(
     name="cytopipe",
@@ -19,96 +12,6 @@ app = typer.Typer(
     add_completion=False,
 )
 
-
-def _run_conversion(label: str, convert_fn, source_path: Path, dest_path: Path) -> None:
-    """Run a CytoTable conversion, reporting success/failure and exiting non-zero on error."""
-    try:
-        convert_fn(source_path, dest_path)
-    except (FileNotFoundError, CytoTableException) as exception:
-        typer.secho(f"{label} failed: {exception}", fg=typer.colors.RED)
-        raise typer.Exit(1) from exception
-    typer.secho(f"{source_path} → {dest_path}", fg=typer.colors.GREEN)
-
-
-@app.command()
-def cellprofiler_parquet(
-    source_path: Annotated[
-        Path,
-        typer.Argument(help="CellProfiler SQLite output to convert.", exists=True),
-    ],
-    dest_path: Annotated[Path, typer.Argument(help="Destination single-cell parquet path.")],
-) -> None:
-    """Convert CellProfiler SQLite output into single-cell parquet (CytoTable)."""
-    _run_conversion("cellprofiler-parquet", cellprofiler_to_parquet, source_path, dest_path)
-
-
-@app.command()
-def deepprofiler_parquet(
-    source_path: Annotated[
-        Path,
-        typer.Argument(help="DeepProfiler single-cell output to convert.", exists=True),
-    ],
-    dest_path: Annotated[Path, typer.Argument(help="Destination single-cell parquet path.")],
-) -> None:
-    """Convert DeepProfiler single-cell output into a single per-plate parquet (CytoTable)."""
-    _run_conversion("deepprofiler-parquet", deepprofiler_to_parquet, source_path, dest_path)
-
-
-@app.command()
-def cellprofiler_deepprofiler(
-    source_path: Annotated[
-        Path,
-        typer.Argument(
-            help="CellProfiler measurement/ dir (or a plate dir containing one).",
-            exists=True,
-            file_okay=False,
-        ),
-    ],
-    dest_path: Annotated[Path, typer.Argument(help="Destination directory.")],
-    platemap: Annotated[
-        Path,
-        typer.Argument(
-            help="Plate-map CSV with treatment/replicate annotations (required by DeepProfiler).",
-            exists=True,
-            dir_okay=False,
-        ),
-    ],
-    platemap_plate_col: Annotated[
-        str,
-        typer.Option(help="Plate-map column to join on plate (empty string = well-only join)."),
-    ] = PLATEMAP_PLATE_COL,
-    platemap_well_col: Annotated[
-        str, typer.Option(help="Plate-map column to join on well.")
-    ] = PLATEMAP_WELL_COL,
-    platemap_cols: Annotated[
-        str,
-        typer.Option(help="Comma-separated plate-map columns to carry into index.csv."),
-    ] = ",".join(PLATEMAP_COLS),
-) -> None:
-    """Build DeepProfiler metadata from CellProfiler output."""
-    cols = tuple(c.strip() for c in platemap_cols.split(",") if c.strip())
-    try:
-        result = bridge(
-            source_path,
-            dest_path,
-            platemap,
-            platemap_plate_col=platemap_plate_col,
-            platemap_well_col=platemap_well_col,
-            platemap_cols=cols,
-        )
-    except (FileNotFoundError, KeyError, ValueError) as exception:
-        typer.secho(f"bridge failed: {exception}", fg=typer.colors.RED)
-        raise typer.Exit(1) from exception
-
-    typer.secho(
-        f"plate {result.plate}: {result.n_location_files} location files, "
-        f"{result.n_sites} index rows → {dest_path}",
-        fg=typer.colors.GREEN,
-    )
-
-    if result.unmatched_wells:
-        typer.secho(
-            f"Warning: {len(result.unmatched_wells)} index key(s) had no plate-map match: "
-            f"{', '.join(result.unmatched_wells)}",
-            fg=typer.colors.YELLOW,
-        )
+# Groups are mounted with add_typer; single commands are registered directly.
+app.add_typer(convert_app, name="convert")
+app.command("bridge")(bridge_command)

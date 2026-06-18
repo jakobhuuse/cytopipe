@@ -6,10 +6,10 @@ import pandas as pd
 import pyarrow as pa
 import pytest
 
-from cytopipe.cellprofiler_deepprofiler import bridge
-from cytopipe.cellprofiler_deepprofiler.index import CHANNEL_ORDER, build_index
-from cytopipe.cellprofiler_deepprofiler.locations import DST_X, DST_Y, clean_nuclei_locations
-from cytopipe.cellprofiler_deepprofiler.platemap import (
+from cytopipe.bridge import bridge
+from cytopipe.bridge.index import CHANNEL_ORDER, build_index
+from cytopipe.bridge.locations import DST_X, DST_Y, clean_nuclei_locations
+from cytopipe.bridge.platemap import (
     join_platemap,
     load_platemap,
     unmatched_wells,

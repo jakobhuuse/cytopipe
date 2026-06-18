@@ -10,21 +10,27 @@ runner = CliRunner()
 def test_root_help_lists_commands():
     result = runner.invoke(app, ["--help"])
     assert result.exit_code == 0
-    assert "cellprofiler-parquet" in result.output
-    assert "deepprofiler-parquet" in result.output
-    assert "cellprofiler-deepprofiler" in result.output
+    assert "convert" in result.output
+    assert "bridge" in result.output
 
 
-def test_cellprofiler_parquet_help():
-    result = runner.invoke(app, ["cellprofiler-parquet", "--help"])
+def test_convert_help_lists_subcommands():
+    result = runner.invoke(app, ["convert", "--help"])
+    assert result.exit_code == 0
+    assert "cellprofiler" in result.output
+    assert "deepprofiler" in result.output
+
+
+def test_convert_cellprofiler_help():
+    result = runner.invoke(app, ["convert", "cellprofiler", "--help"])
     assert result.exit_code == 0
 
 
-def test_deepprofiler_parquet_help():
-    result = runner.invoke(app, ["deepprofiler-parquet", "--help"])
+def test_convert_deepprofiler_help():
+    result = runner.invoke(app, ["convert", "deepprofiler", "--help"])
     assert result.exit_code == 0
 
 
 def test_bridge_help():
-    result = runner.invoke(app, ["cellprofiler-deepprofiler", "--help"])
+    result = runner.invoke(app, ["bridge", "--help"])
     assert result.exit_code == 0

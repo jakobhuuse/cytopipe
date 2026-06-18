@@ -1,7 +1,3 @@
-"""
-``cytopipe cellprofiler-deepprofiler`` — CellProfiler measurement output → DeepProfiler inputs.
-"""
-
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -28,6 +24,22 @@ class BridgeResult:
     n_location_files: int
     n_sites: int
     unmatched_wells: list[str] = field(default_factory=list)
+
+    def summary(self) -> str:
+        """One-line description of what the bridge produced."""
+        return (
+            f"plate {self.plate}: {self.n_location_files} location files, "
+            f"{self.n_sites} index rows"
+        )
+
+    def warning(self) -> str | None:
+        """Message if any index keys had no plate-map match, else None."""
+        if not self.unmatched_wells:
+            return None
+        return (
+            f"{len(self.unmatched_wells)} index key(s) had no plate-map match: "
+            f"{', '.join(self.unmatched_wells)}"
+        )
 
 
 def _resolve_measurement(source: Path) -> Path:
