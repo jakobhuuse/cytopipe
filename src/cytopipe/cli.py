@@ -3,7 +3,7 @@
 import typer
 
 from cytopipe.bridge.cli import bridge_command
-from cytopipe.conversion.cli import app as convert_app
+from cytopipe.convert.cli import app as convert_app
 
 app = typer.Typer(
     name="cytopipe",

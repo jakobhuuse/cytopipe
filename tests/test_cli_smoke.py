@@ -19,6 +19,7 @@ def test_convert_help_lists_subcommands():
     assert result.exit_code == 0
     assert "cellprofiler" in result.output
     assert "deepprofiler" in result.output
+    assert "concat" in result.output
 
 
 def test_convert_cellprofiler_help():
@@ -28,6 +29,11 @@ def test_convert_cellprofiler_help():
 
 def test_convert_deepprofiler_help():
     result = runner.invoke(app, ["convert", "deepprofiler", "--help"])
+    assert result.exit_code == 0
+
+
+def test_convert_concat_help():
+    result = runner.invoke(app, ["convert", "concat", "--help"])
     assert result.exit_code == 0
 
 

@@ -4,7 +4,7 @@ from typing import Annotated
 import typer
 from cytotable.exceptions import CytoTableException
 
-from .parquet import cellprofiler_to_parquet, deepprofiler_to_parquet
+from .parquet import cellprofiler_to_parquet, concat_parquets, deepprofiler_to_parquet
 
 app = typer.Typer(
     no_args_is_help=True,
@@ -44,3 +44,20 @@ def deepprofiler_parquet(
 ) -> None:
     """Convert DeepProfiler single-cell output into a single per-plate parquet."""
     _run_conversion("convert deepprofiler", deepprofiler_to_parquet, source_path, dest_path)
+
+
+@app.command("concat")
+def concat_parquet(
+    parts_dir: Annotated[
+        Path,
+        typer.Argument(help="Directory containing parquets to concatenate.", exists=True),
+    ],
+    dest_path: Annotated[Path, typer.Argument(help="Destination combined parquet path.")],
+) -> None:
+    """Concatenate every parquet under a directory into one (union by name, schema-checked)."""
+    try:
+        concat_parquets(parts_dir, dest_path)
+    except (FileNotFoundError, ValueError) as exception:
+        typer.secho(f"convert concat failed: {exception}", fg=typer.colors.RED)
+        raise typer.Exit(1) from exception
+    typer.secho(f"{parts_dir} → {dest_path}", fg=typer.colors.GREEN)
