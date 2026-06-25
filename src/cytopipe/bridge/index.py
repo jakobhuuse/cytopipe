@@ -11,8 +11,12 @@ METADATA_SITE = "Metadata_Site"
 
 
 def read_image_table(path: Path) -> pd.DataFrame:
-    """Read the CP Image table CSV"""
-    df = pd.read_csv(path, skipinitialspace=True)
+    """Read a CP Image table CSV, or concatenate every ``*.csv`` in a directory."""
+    path = Path(path)
+    sources = sorted(path.glob("*.csv")) if path.is_dir() else [path]
+    if not sources:
+        raise FileNotFoundError(f"No Image table CSV found under {path}.")
+    df = pd.concat([pd.read_csv(src, skipinitialspace=True) for src in sources], ignore_index=True)
     df.columns = df.columns.str.strip()
     return df
 

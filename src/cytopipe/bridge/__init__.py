@@ -16,6 +16,16 @@ from .platemap import (
 
 __all__ = ["bridge", "BridgeResult"]
 _IMAGE_TABLE = "Image.csv"
+_IMAGE_TABLE_DIR = "image_csv"
+
+
+def _image_table_path(measurement: Path) -> Path | None:
+    """The per-chunk ``image_csv/`` dir, a single ``Image.csv``, or None if neither is present."""
+    if (measurement / _IMAGE_TABLE_DIR).is_dir():
+        return measurement / _IMAGE_TABLE_DIR
+    if (measurement / _IMAGE_TABLE).is_file():
+        return measurement / _IMAGE_TABLE
+    return None
 
 
 @dataclass
@@ -44,13 +54,13 @@ class BridgeResult:
 
 def _resolve_measurement(source: Path) -> Path:
     """Accept either a CellProfiler ``measurement/`` dir or a plate dir containing one."""
-    if (source / _IMAGE_TABLE).is_file():
+    if _image_table_path(source) is not None:
         return source
-    elif (source / "measurement" / _IMAGE_TABLE).is_file():
+    elif _image_table_path(source / "measurement") is not None:
         return source / "measurement"
     raise FileNotFoundError(
         f"{source} does not look like a CellProfiler measurement dir "
-        f"(no {_IMAGE_TABLE} file here or under 'measurement/')."
+        f"(no {_IMAGE_TABLE} or {_IMAGE_TABLE_DIR}/ here or under 'measurement/')."
     )
 
 
@@ -79,7 +89,7 @@ def bridge(
     """CellProfiler ``measurement/`` dir → DeepProfiler ``locations/`` + ``index.csv``."""
     source, dest = Path(source), Path(dest)
     measurement = _resolve_measurement(source)
-    image_table = read_image_table(measurement / _IMAGE_TABLE)
+    image_table = read_image_table(_image_table_path(measurement))
     plate = _resolve_plate(image_table, measurement)
 
     n_files = convert_locations_tree(measurement, dest, plate)

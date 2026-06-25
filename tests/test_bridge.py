@@ -1,5 +1,6 @@
 """Unit + end-to-end tests for the CellProfiler → DeepProfiler bridge."""
 
+import shutil
 from pathlib import Path
 
 import pandas as pd
@@ -7,7 +8,7 @@ import pyarrow as pa
 import pytest
 
 from cytopipe.bridge import bridge
-from cytopipe.bridge.index import CHANNEL_ORDER, build_index
+from cytopipe.bridge.index import CHANNEL_ORDER, build_index, read_image_table
 from cytopipe.bridge.locations import DST_X, DST_Y, clean_nuclei_locations
 from cytopipe.bridge.platemap import (
     join_platemap,
@@ -140,3 +141,37 @@ def test_bridge_accepts_plate_dir(tmp_path):
     # Passing the plate dir (which contains measurement/) also works.
     result = bridge(MEASUREMENT.parent, tmp_path, PLATEMAP)
     assert result.n_sites == 2
+
+
+def test_read_image_table_concats_directory(tmp_path):
+    cols = "Metadata_Plate,Metadata_Well,Metadata_Site," + ",".join(
+        f"FileName_Orig{c}" for c in CHANNEL_ORDER
+    )
+    image_csv = tmp_path / "image_csv"
+    image_csv.mkdir()
+    (image_csv / "26159.1.Image.csv").write_text(f"{cols}\n26159,A02,1,a,b,c,d,e\n")
+    (image_csv / "26159.2.Image.csv").write_text(f"{cols}\n26159,A02,2,a,b,c,d,e\n")
+
+    df = read_image_table(image_csv)
+    assert len(df) == 2  # rows unioned across the per-chunk CSVs
+    assert sorted(df["Metadata_Site"]) == [1, 2]
+
+
+def test_bridge_accepts_chunked_image_csv_dir(tmp_path):
+    # Reassembled per-chunk Image tables arrive under measurement/image_csv/,
+    # not a single Image.csv.
+    measurement = tmp_path / "measurement"
+    (measurement / "image_csv").mkdir(parents=True)
+    (measurement / "locations").mkdir()
+
+    full = read_image_table(MEASUREMENT / "Image.csv")
+    for site, group in full.groupby("Metadata_Site"):
+        group.to_csv(measurement / "image_csv" / f"26159.{site}.Image.csv", index=False)
+    for loc in (MEASUREMENT / "locations").glob("*-Nuclei.csv"):
+        shutil.copy(loc, measurement / "locations" / loc.name)
+
+    result = bridge(measurement, tmp_path / "out", PLATEMAP)
+    assert result.plate == "26159"
+    assert result.n_sites == 2
+    index = pd.read_csv(tmp_path / "out" / "metadata" / "index.csv")
+    assert index.loc[index["Metadata_Site"] == 1, "Mito"].iloc[0] == "26159/A02_s1_w2.tiff"
