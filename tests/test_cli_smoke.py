@@ -12,6 +12,7 @@ def test_root_help_lists_commands():
     assert result.exit_code == 0
     assert "convert" in result.output
     assert "bridge" in result.output
+    assert "loaddata" in result.output
 
 
 def test_convert_help_lists_subcommands():
@@ -39,4 +40,9 @@ def test_convert_concat_help():
 
 def test_bridge_help():
     result = runner.invoke(app, ["bridge", "--help"])
+    assert result.exit_code == 0
+
+
+def test_loaddata_help():
+    result = runner.invoke(app, ["loaddata", "--help"])
     assert result.exit_code == 0

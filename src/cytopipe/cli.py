@@ -4,6 +4,7 @@ import typer
 
 from cytopipe.bridge.cli import bridge_command
 from cytopipe.convert.cli import app as convert_app
+from cytopipe.loaddata.cli import loaddata_command
 
 app = typer.Typer(
     name="cytopipe",
@@ -15,3 +16,4 @@ app = typer.Typer(
 # Groups are mounted with add_typer; single commands are registered directly.
 app.add_typer(convert_app, name="convert")
 app.command("bridge")(bridge_command)
+app.command("loaddata")(loaddata_command)
