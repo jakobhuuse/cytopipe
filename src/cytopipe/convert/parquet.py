@@ -8,6 +8,8 @@ from cytotable import convert
 from parsl.config import Config
 from parsl.executors import ThreadPoolExecutor
 
+from cytopipe.io import parquet_columns
+
 
 def convert_to_parquet(
     source_path: Path,
@@ -33,15 +35,10 @@ def _row_count(con: duckdb.DuckDBPyConnection, paths: list[str]) -> int:
 
 
 def _assert_uniform_schema(con: duckdb.DuckDBPyConnection, paths: list[str]) -> None:
-    """Raise unless all parts share one column set, so union_by_name can't NULL-pad."""
-
-    def columns(path: str) -> set[str]:
-        peek = con.execute("SELECT * FROM read_parquet(?) LIMIT 0", [path])
-        return {column[0] for column in peek.description}
-
-    reference = columns(paths[0])
+    """Raise unless all parts share one column set."""
+    reference = set(parquet_columns(con, paths[0]))
     for path in paths[1:]:
-        found = columns(path)
+        found = set(parquet_columns(con, path))
         if found != reference:
             raise ValueError(
                 f"schema mismatch in {Path(path).name}: "
@@ -50,7 +47,7 @@ def _assert_uniform_schema(con: duckdb.DuckDBPyConnection, paths: list[str]) -> 
 
 
 def concat_parquets(parts_dir: Path, dest_path: Path) -> None:
-    """Concatenate every parquet under parts_dir into a single parquet at dest_path (lossless)."""
+    """Concatenate every parquet under parts_dir into a single parquet at dest_path."""
     parts = sorted(str(part) for part in parts_dir.rglob("*.parquet"))
     if not parts:
         raise FileNotFoundError(f"no parquet files under {parts_dir}")

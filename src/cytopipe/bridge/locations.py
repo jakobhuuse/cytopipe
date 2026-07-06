@@ -23,8 +23,10 @@ def clean_nuclei_locations(table: pa.Table, as_int: bool = True) -> pa.Table:
 
 
 def convert_locations_tree(measurement_dir: Path, dest_dir: Path, plate: str) -> int:
-    """Convert ``measurement/locations/*-Nuclei.csv`` to DeepProfiler input under
-    ``dest/locations/{plate}/``; return the number of files written."""
+    """
+    Convert CellProfiler nuclei output to DeepProfiler input. 
+    Return the number of files written.
+    """
     src_dir = Path(measurement_dir) / "locations"
     out_dir = Path(dest_dir) / "locations" / plate
     out_dir.mkdir(parents=True, exist_ok=True)

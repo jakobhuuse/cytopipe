@@ -16,12 +16,15 @@ from matplotlib import pyplot as plt
 from sklearn.preprocessing import StandardScaler
 from umap import UMAP
 
+from cytopipe.columns import (
+    CONTROL_COMPOUND,
+    METADATA_BATCH,
+    METADATA_COMPOUND,
+    METADATA_PLATE,
+)
+
 from . import theme
 from .data import (
-    BATCH_COL,
-    COMPOUND_COL,
-    CONTROL_COMPOUND,
-    PLATE_COL,
     clean_features,
     infer_grid_shape,
     parse_wells,
@@ -136,21 +139,23 @@ def _scatter_categorical(ax, embedding: np.ndarray, labels: pd.Series, title: st
     ax.set_title(title)
 
 
-def _scatter_control(ax, embedding: np.ndarray, compounds: pd.Series) -> None:
-    control = (compounds == CONTROL_COMPOUND).to_numpy()
+def _scatter_control(ax, embedding: np.ndarray, compounds: pd.Series, control: str) -> None:
+    is_control = (compounds == control).to_numpy()
     ax.scatter(
-        embedding[~control, 0], embedding[~control, 1], s=5, linewidths=0, alpha=0.45,
+        embedding[~is_control, 0], embedding[~is_control, 1], s=5, linewidths=0, alpha=0.45,
         color=theme.REST_GRAY, label="treatment",
     )
     ax.scatter(
-        embedding[control, 0], embedding[control, 1], s=9, linewidths=0, alpha=0.9,
-        color=theme.SERIES_BLUE, label=CONTROL_COMPOUND,
+        embedding[is_control, 0], embedding[is_control, 1], s=9, linewidths=0, alpha=0.9,
+        color=theme.SERIES_BLUE, label=control,
     )
     ax.legend(markerscale=2, loc="best")
-    ax.set_title(f"{CONTROL_COMPOUND} vs. treatments")
+    ax.set_title(f"{control} vs. treatments")
 
 
-def embedding_umap(cohort: pd.DataFrame, out_dir: Path, fmt: str, seed: int = 42) -> Path:
+def embedding_umap(
+    cohort: pd.DataFrame, out_dir: Path, fmt: str, control: str = CONTROL_COMPOUND, seed: int = 42
+) -> Path:
     """UMAP of well-level profiles, one panel per available metadata + a control highlight."""
     if len(cohort) < 5:
         raise FigureSkipped(f"only {len(cohort)} wells (need >= 5)")
@@ -170,12 +175,12 @@ def embedding_umap(cohort: pd.DataFrame, out_dir: Path, fmt: str, seed: int = 42
         embedding = reducer.fit_transform(scaled)
 
     panels = []
-    if PLATE_COL in cohort:
-        panels.append(("ordered", cohort[PLATE_COL].astype(str), "by plate"))
-    if BATCH_COL in cohort:
-        panels.append(("categorical", cohort[BATCH_COL].astype(str), "by batch"))
-    if COMPOUND_COL in cohort:
-        panels.append(("control", cohort[COMPOUND_COL].astype(str), ""))
+    if METADATA_PLATE in cohort:
+        panels.append(("ordered", cohort[METADATA_PLATE].astype(str), "by plate"))
+    if METADATA_BATCH in cohort:
+        panels.append(("categorical", cohort[METADATA_BATCH].astype(str), "by batch"))
+    if METADATA_COMPOUND in cohort:
+        panels.append(("control", cohort[METADATA_COMPOUND].astype(str), ""))
 
     fig, axes = plt.subplots(1, len(panels), figsize=(4.6 * len(panels), 4.2), squeeze=False)
     for ax, (kind, labels, title) in zip(axes.flat, panels, strict=True):
@@ -184,7 +189,7 @@ def embedding_umap(cohort: pd.DataFrame, out_dir: Path, fmt: str, seed: int = 42
         elif kind == "categorical":
             _scatter_categorical(ax, embedding, labels, title)
         else:
-            _scatter_control(ax, embedding, labels)
+            _scatter_control(ax, embedding, labels, control)
         ax.set_xticks([])
         ax.set_yticks([])
         ax.set_xlabel("UMAP-1")
@@ -201,26 +206,31 @@ def embedding_umap(cohort: pd.DataFrame, out_dir: Path, fmt: str, seed: int = 42
 
 
 def replicate_reproducibility(
-    cohort: pd.DataFrame, out_dir: Path, fmt: str, n_null: int = 5000, seed: int = 0
+    cohort: pd.DataFrame,
+    out_dir: Path,
+    fmt: str,
+    control: str = CONTROL_COMPOUND,
+    n_null: int = 5000,
+    seed: int = 0,
 ) -> Path:
     """Replicate vs. null correlation distributions + percent replicating.
 
     Replicate score per compound = median pairwise correlation among its wells; the null is
     correlations of random cross-compound well pairs. Controls are excluded from the numerator.
     """
-    if COMPOUND_COL not in cohort:
-        raise FigureSkipped(f"no {COMPOUND_COL} column")
+    if METADATA_COMPOUND not in cohort:
+        raise FigureSkipped(f"no {METADATA_COMPOUND} column")
 
     _, features = split_metadata_features(cohort)
     matrix = clean_features(cohort, features)
     zscores, kept = _row_zscores(matrix.to_numpy())
-    compounds = cohort[COMPOUND_COL].astype(str).to_numpy()[kept]
+    compounds = cohort[METADATA_COMPOUND].astype(str).to_numpy()[kept]
     n_features = zscores.shape[1]
 
     groups = {c: np.flatnonzero(compounds == c) for c in np.unique(compounds)}
     replicate_scores = []
     for compound, idx in groups.items():
-        if compound == CONTROL_COMPOUND or len(idx) < 2:
+        if compound == control or len(idx) < 2:
             continue
         corr = (zscores[idx] @ zscores[idx].T) / n_features
         replicate_scores.append(np.median(corr[np.triu_indices(len(idx), k=1)]))
@@ -271,22 +281,26 @@ def replicate_reproducibility(
 
 
 def similarity_clustermap(
-    consensus_path: Path | None, out_dir: Path, fmt: str, top_n: int = 50
+    consensus_path: Path | None,
+    out_dir: Path,
+    fmt: str,
+    control: str = CONTROL_COMPOUND,
+    top_n: int = 50,
 ) -> Path:
     """Clustered compound x compound correlation of the ``top_n`` most active consensus profiles."""
     if consensus_path is None:
         raise FigureSkipped("no consensus.parquet")
 
     df = pd.read_parquet(consensus_path)
-    if COMPOUND_COL not in df:
-        raise FigureSkipped(f"no {COMPOUND_COL} column")
+    if METADATA_COMPOUND not in df:
+        raise FigureSkipped(f"no {METADATA_COMPOUND} column")
 
     _, features = split_metadata_features(df)
     matrix = clean_features(df, features)
-    compounds = df[COMPOUND_COL].astype(str).reset_index(drop=True)
+    compounds = df[METADATA_COMPOUND].astype(str).reset_index(drop=True)
     matrix = matrix.reset_index(drop=True)
 
-    is_control = compounds == CONTROL_COMPOUND
+    is_control = compounds == control
     if is_control.any():
         reference = matrix[is_control].mean(axis=0)
     else:

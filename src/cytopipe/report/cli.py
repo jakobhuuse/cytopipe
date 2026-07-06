@@ -1,4 +1,4 @@
-"""``cytopipe report`` — render the four standard Cell Painting figures from a results tree."""
+"""cytopipe report — render the four standard Cell Painting figures from a results tree."""
 
 from collections.abc import Callable
 from enum import StrEnum
@@ -7,9 +7,20 @@ from typing import Annotated
 
 import typer
 
-from . import figures
-from .data import ProfileSet, discover_profiles, load_profiles, plate_well_values
-from .theme import apply_theme
+from cytopipe.columns import CONTROL_COMPOUND
+
+from . import (
+    FigureSkipped,
+    ProfileSet,
+    apply_theme,
+    discover_profiles,
+    embedding_umap,
+    load_profiles,
+    plate_heatmaps,
+    plate_well_values,
+    replicate_reproducibility,
+    similarity_clustermap,
+)
 
 
 class Engine(StrEnum):
@@ -40,9 +51,9 @@ def _emit(label: str, build: Callable[[], Path]) -> None:
     """Run one figure builder, reporting written/skipped/failed without aborting the others."""
     try:
         path = build()
-    except figures.FigureSkipped as skip:
+    except FigureSkipped as skip:
         typer.secho(f"{label}: skipped ({skip})", fg=typer.colors.YELLOW)
-    except Exception as error:  # noqa: BLE001 — one bad figure shouldn't kill the report
+    except Exception as error:
         typer.secho(f"{label}: failed ({error})", fg=typer.colors.RED)
     else:
         typer.secho(f"{label} → {path}", fg=typer.colors.GREEN)
@@ -65,6 +76,9 @@ def report_command(
     top_n: Annotated[
         int, typer.Option(help="Compounds in the similarity clustermap (0 = all).")
     ] = 50,
+    control: Annotated[
+        str, typer.Option(help="Negative-control compound to highlight/exclude in figures 2-4.")
+    ] = CONTROL_COMPOUND,
     fmt: Annotated[ImageFormat, typer.Option("--format", help="Image format.")] = ImageFormat.png,
 ) -> None:
     """Render plate heatmaps, a UMAP embedding, replicate reproducibility, and a clustermap."""
@@ -80,21 +94,22 @@ def report_command(
     ext = fmt.value
     typer.secho(f"Profiles: {profiles.engine} @ {profiles.root}", fg=typer.colors.CYAN)
 
-    # Load the well-level cohort once; shared by figures 2 and 3.
+    # Load the well-level cohort once. Shared by figures 2 and 3.
     cohort = load_profiles(profiles.cohort_source()) if selected & {2, 3} else None
 
     if 1 in selected:
         plates, value_label = plate_well_values(profiles)
-        _emit("1 plate heatmaps", lambda: figures.plate_heatmaps(plates, value_label, out, ext))
+        _emit("1 plate heatmaps", lambda: plate_heatmaps(plates, value_label, out, ext))
     if 2 in selected:
-        _emit("2 UMAP embedding", lambda: figures.embedding_umap(cohort, out, ext))
+        _emit("2 UMAP embedding", lambda: embedding_umap(cohort, out, ext, control=control))
     if 3 in selected:
         _emit(
             "3 replicate reproducibility",
-            lambda: figures.replicate_reproducibility(cohort, out, ext),
+            lambda: replicate_reproducibility(cohort, out, ext, control=control),
         )
     if 4 in selected:
+        consensus = profiles.consensus
         _emit(
             "4 similarity clustermap",
-            lambda: figures.similarity_clustermap(profiles.consensus, out, ext, top_n),
+            lambda: similarity_clustermap(consensus, out, ext, control=control, top_n=top_n),
         )

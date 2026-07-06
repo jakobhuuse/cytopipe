@@ -1,7 +1,7 @@
 [project]
 name = "cytopipe"
 version = "0.1.0"
-description = "Data-management/glue layer (CytoTable-based) for a cell-painting feature-extraction pipeline"
+description = "Data-management/glue layer for a cell-painting feature-extraction pipeline"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [

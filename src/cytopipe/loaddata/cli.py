@@ -1,3 +1,5 @@
+"""cytopipe loaddata — CLI for generating a CellProfiler LoadData CSV."""
+
 from pathlib import Path
 from typing import Annotated
 

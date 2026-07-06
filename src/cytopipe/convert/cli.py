@@ -1,10 +1,12 @@
+"""cytopipe convert — CLI for CytoTable conversions to single-cell parquet."""
+
 from pathlib import Path
 from typing import Annotated
 
 import typer
 from cytotable.exceptions import CytoTableException
 
-from .parquet import cellprofiler_to_parquet, concat_parquets, deepprofiler_to_parquet
+from . import cellprofiler_to_parquet, concat_parquets, deepprofiler_to_parquet
 
 app = typer.Typer(
     no_args_is_help=True,
@@ -16,14 +18,14 @@ def _run_conversion(label: str, convert_fn, source_path: Path, dest_path: Path) 
     """Run a CytoTable conversion, reporting success/failure and exiting non-zero on error."""
     try:
         convert_fn(source_path, dest_path)
-    except (FileNotFoundError, CytoTableException) as exception:
+    except (FileNotFoundError, CytoTableException, ValueError) as exception:
         typer.secho(f"{label} failed: {exception}", fg=typer.colors.RED)
         raise typer.Exit(1) from exception
     typer.secho(f"{source_path} → {dest_path}", fg=typer.colors.GREEN)
 
 
 @app.command("cellprofiler")
-def cellprofiler_parquet(
+def cellprofiler_command(
     source_path: Annotated[
         Path,
         typer.Argument(help="CellProfiler SQLite output to convert.", exists=True),
@@ -35,7 +37,7 @@ def cellprofiler_parquet(
 
 
 @app.command("deepprofiler")
-def deepprofiler_parquet(
+def deepprofiler_command(
     source_path: Annotated[
         Path,
         typer.Argument(help="DeepProfiler single-cell output to convert.", exists=True),
@@ -47,7 +49,7 @@ def deepprofiler_parquet(
 
 
 @app.command("concat")
-def concat_parquet(
+def concat_command(
     parts_dir: Annotated[
         Path,
         typer.Argument(help="Directory containing parquets to concatenate.", exists=True),
@@ -55,9 +57,4 @@ def concat_parquet(
     dest_path: Annotated[Path, typer.Argument(help="Destination combined parquet path.")],
 ) -> None:
     """Concatenate every parquet under a directory into one (union by name, schema-checked)."""
-    try:
-        concat_parquets(parts_dir, dest_path)
-    except (FileNotFoundError, ValueError) as exception:
-        typer.secho(f"convert concat failed: {exception}", fg=typer.colors.RED)
-        raise typer.Exit(1) from exception
-    typer.secho(f"{parts_dir} → {dest_path}", fg=typer.colors.GREEN)
+    _run_conversion("convert concat", concat_parquets, parts_dir, dest_path)

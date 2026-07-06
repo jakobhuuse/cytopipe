@@ -1,3 +1,5 @@
+"""cytopipe bridge — CLI for building DeepProfiler inputs from CellProfiler output."""
+
 from pathlib import Path
 from typing import Annotated
 
@@ -37,7 +39,7 @@ def bridge_command(
         typer.Option(help="Comma-separated plate-map columns to carry into index.csv."),
     ] = ",".join(PLATEMAP_COLS),
 ) -> None:
-    """Build DeepProfiler inputs (locations + index.csv) from CellProfiler output."""
+    """Command for building DeepProfiler inputs (locations + index.csv) from CellProfiler output."""
     cols = tuple(c.strip() for c in platemap_cols.split(",") if c.strip())
     try:
         result = bridge(

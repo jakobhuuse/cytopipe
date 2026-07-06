@@ -14,16 +14,12 @@ import duckdb
 import numpy as np
 import pandas as pd
 
-METADATA_PREFIX = "Metadata_"
-PLATE_COL = "Metadata_Plate"
-WELL_COL = "Metadata_Well"
-COMPOUND_COL = "Metadata_Compound"
-BATCH_COL = "Metadata_Batch"
-CONTROL_COMPOUND = "DMSO"
+from cytopipe.columns import METADATA_PREFIX, METADATA_WELL
+from cytopipe.io import parquet_columns
 
 ENGINES = ("deepprofiler", "cellprofiler")
-# CytoTable may prefix the well column differently between engines; try these in order.
-_WELL_COL_CANDIDATES = (WELL_COL, "Image_Metadata_Well")
+# CytoTable may prefix the well column differently between engines.
+_WELL_COL_CANDIDATES = (METADATA_WELL, "Image_Metadata_Well")
 # Smallest standard microplate whose grid contains the observed wells.
 _STANDARD_PLATES = ((8, 12), (16, 24), (32, 48))
 _WELL_RE = re.compile(r"^\s*([A-Za-z]+)\s*0*(\d+)\s*$")
@@ -43,8 +39,8 @@ class ProfileSet:
     def cohort_source(self) -> list[Path]:
         """Well-level cohort input for the embedding/reproducibility figures.
 
-        Prefer CellProfiler's feature-selected cohort file; otherwise the per-plate
-        normalized profiles (DeepProfiler publishes no feature_select step).
+        Prefer CellProfiler's feature-selected cohort file. 
+        Otherwise the per-plate normalized profiles (DeepProfiler publishes no feature_select step).
         """
         if self.feature_select is not None:
             return [self.feature_select]
@@ -161,8 +157,7 @@ def infer_grid_shape(max_row: int, max_col: int) -> tuple[int, int]:
 
 def _parquet_columns(path: Path) -> list[str]:
     with duckdb.connect() as con:
-        peek = con.execute("SELECT * FROM read_parquet(?) LIMIT 0", [str(path)])
-        return [column[0] for column in peek.description]
+        return parquet_columns(con, path)
 
 
 def _detect_well_column(path: Path) -> str:
@@ -198,7 +193,7 @@ def plate_well_values(profiles: ProfileSet) -> tuple[list[tuple[str, pd.DataFram
         df = pd.read_parquet(path)
         _, features = split_metadata_features(df)
         wells = pd.DataFrame(
-            {"well": df[WELL_COL].astype(str), "value": df[features].abs().mean(axis=1)}
+            {"well": df[METADATA_WELL].astype(str), "value": df[features].abs().mean(axis=1)}
         )
         plates.append((plate_id_from_path(path), wells))
     return plates, "mean |feature|"

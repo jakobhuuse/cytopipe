@@ -1,3 +1,5 @@
+"""Generate a CellProfiler LoadData CSV from a plate's raw channel images."""
+
 from dataclasses import dataclass
 from pathlib import Path
 

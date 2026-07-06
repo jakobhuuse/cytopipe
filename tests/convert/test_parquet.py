@@ -33,6 +33,22 @@ def test_concat_parquets_is_lossless(tmp_path):
     assert cols == {"id", "label"}
 
 
+def test_concat_parquets_recurses_into_subdirs(tmp_path):
+    # concat_parquets globs recursively; parts nested under source dirs must be found.
+    parts = tmp_path / "parts"
+    (parts / "26157").mkdir(parents=True)
+    (parts / "26158").mkdir()
+    con = duckdb.connect()
+    _write_parquet(con, parts / "26157" / "a.parquet", ["id", "label"], [(1, "x")])
+    _write_parquet(con, parts / "26158" / "b.parquet", ["id", "label"], [(2, "y")])
+    dest = tmp_path / "out.parquet"
+
+    concat_parquets(parts, dest)
+
+    n = con.execute("SELECT count(*) FROM read_parquet(?)", [str(dest)]).fetchone()[0]
+    assert n == 2
+
+
 def test_concat_parquets_tolerates_column_reordering(tmp_path):
     # Identical column *set*, different order — union_by_name must still be lossless.
     parts = tmp_path / "parts"

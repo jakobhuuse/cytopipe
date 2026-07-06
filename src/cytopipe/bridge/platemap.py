@@ -2,12 +2,12 @@ from pathlib import Path
 
 import pandas as pd
 
-from .index import METADATA_PLATE, METADATA_WELL
+from cytopipe.columns import METADATA_BATCH, METADATA_COMPOUND, METADATA_PLATE, METADATA_WELL
 
 # Project plate-map defaults: columns to join on (plate/well) and annotations to carry over.
 PLATEMAP_PLATE_COL = "Metadata_PlateID"
 PLATEMAP_WELL_COL = "Metadata_DestinationWell"
-PLATEMAP_COLS = ("Metadata_Compound", "Metadata_Batch")
+PLATEMAP_COLS = (METADATA_COMPOUND, METADATA_BATCH)
 
 
 def load_platemap(path: Path) -> pd.DataFrame:
@@ -36,7 +36,7 @@ def unmatched_wells(
 ) -> list[str]:
     """Return the index join-keys (as strings) that have no row in the plate map."""
     left, right = _merge_keys(plate_col, well_col)
-    have = set(map(tuple, platemap[right].astype(str).itertuples(index=False, name=None)))
+    have = set(platemap[right].astype(str).itertuples(index=False, name=None))
     keys = index[left].astype(str).itertuples(index=False, name=None)
     return sorted({"/".join(k) for k in keys if k not in have})
 
@@ -48,7 +48,7 @@ def join_platemap(
     well_col: str,
     cols: tuple[str, ...] | None,
 ) -> pd.DataFrame:
-    """Left-join plate-map ``cols`` onto the index by plate/well key(s) (join keys always kept)."""
+    """Left-join plate-map onto the index by plate/well key(s) (join keys always kept)."""
     left, right = _merge_keys(plate_col, well_col)
     if cols is not None:
         missing = [c for c in [*right, *cols] if c not in platemap.columns]

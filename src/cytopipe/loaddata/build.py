@@ -2,7 +2,8 @@ from pathlib import Path
 
 import pandas as pd
 
-from cytopipe.bridge.index import METADATA_PLATE, METADATA_SITE, METADATA_WELL
+from cytopipe.columns import METADATA_PLATE, METADATA_SITE, METADATA_WELL
+from cytopipe.io import write_csv
 
 from .scan import CHANNEL_BY_NUMBER
 
@@ -46,7 +47,4 @@ def build_loaddata(
 
 def write_loaddata(table: pd.DataFrame, out: Path) -> Path:
     """Write the LoadData table to ``out`` (creating parent dirs) and return the path."""
-    out = Path(out)
-    out.parent.mkdir(parents=True, exist_ok=True)
-    table.to_csv(out, index=False)
-    return out
+    return write_csv(table, out)
