@@ -4,6 +4,7 @@ Commands load, expose help, and wire through to their module logic.
 """
 
 import pandas as pd
+import re
 from typer.testing import CliRunner
 
 from cytopipe.cli import app
@@ -43,7 +44,10 @@ def test_each_command_exposes_help():
 def test_report_exposes_control_option():
     result = runner.invoke(app, ["report", "--help"])
     assert result.exit_code == 0
-    assert "--control" in result.output
+    # Strip ANSI / rich formatting that CI may add to help output
+    ansi_escape = re.compile(r"\x1B\[[0-?]*[ -/]*[@-~]")
+    cleaned = ansi_escape.sub("", result.output)
+    assert "--control" in cleaned
 
 
 # --- functional invocations -------------------------------------------------------------------
