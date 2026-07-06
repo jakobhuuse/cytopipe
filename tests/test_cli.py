@@ -3,8 +3,9 @@ Composed-CLI tests.
 Commands load, expose help, and wire through to their module logic.
 """
 
-import pandas as pd
 import re
+
+import pandas as pd
 from typer.testing import CliRunner
 
 from cytopipe.cli import app
