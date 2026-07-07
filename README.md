@@ -1,6 +1,6 @@
 # cytopipe
 
-CytoTable-based data-management / glue layer for a Nextflow-orchestrated cell-painting
+Data-management / glue layer for a Nextflow-orchestrated cell-painting
 feature-extraction pipeline. Packaged as a container image and consumed by the pipeline repo,
 [cell-painting-pipeline](https://github.com/jakobhuuse/cell-painting-pipeline).
 
