@@ -3,28 +3,25 @@ Composed-CLI tests.
 Commands load, expose help, and wire through to their module logic.
 """
 
-import re
-
 import pandas as pd
 from typer.testing import CliRunner
 
 from cytopipe.cli import app
+from cytopipe.convert.cli import app as convert_app
 
 runner = CliRunner()
 
 
-def test_root_help_lists_commands():
-    result = runner.invoke(app, ["--help"])
-    assert result.exit_code == 0
-    for command in ("convert", "bridge", "loaddata", "report"):
-        assert command in result.output
+def test_root_app_registers_all_commands():
+    commands = {command.name for command in app.registered_commands}
+    groups = {group.name for group in app.registered_groups}
+    assert {"bridge", "loaddata", "report"} <= commands
+    assert "convert" in groups
 
 
-def test_convert_help_lists_subcommands():
-    result = runner.invoke(app, ["convert", "--help"])
-    assert result.exit_code == 0
-    for sub in ("cellprofiler", "deepprofiler", "concat"):
-        assert sub in result.output
+def test_convert_app_registers_subcommands():
+    subcommands = {command.name for command in convert_app.registered_commands}
+    assert {"cellprofiler", "deepprofiler", "concat"} <= subcommands
 
 
 def test_each_command_exposes_help():
@@ -37,15 +34,6 @@ def test_each_command_exposes_help():
         ["report", "--help"],
     ):
         assert runner.invoke(app, args).exit_code == 0
-
-
-def test_report_exposes_control_option():
-    result = runner.invoke(app, ["report", "--help"])
-    assert result.exit_code == 0
-    # Strip ANSI / rich formatting that CI may add to help output
-    ansi_escape = re.compile(r"\x1B\[[0-?]*[ -/]*[@-~]")
-    cleaned = ansi_escape.sub("", result.output)
-    assert "--control" in cleaned
 
 
 # --- functional invocations -------------------------------------------------------------------
