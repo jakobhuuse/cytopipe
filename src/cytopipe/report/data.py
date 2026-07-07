@@ -1,9 +1,7 @@
 """Locate pycytominer profile outputs and shape them for the report figures.
 
-The pipeline publishes profiles under ``results/<experiment>/<engine>/`` (see
-``nextflow/workflows/*.nf``). Metadata columns are ``Metadata_*`` and everything else is a
-feature — the pycytominer ``--features infer`` contract — so the same code serves both the
-DeepProfiler (``efficientnet_*``) and CellProfiler (``Cells_/Cytoplasm_/Nuclei_*``) engines.
+Profiles are published under ``results/<experiment>/<engine>/``. Metadata columns are
+``Metadata_*`` and everything else is a feature, so one code path serves both engines.
 """
 
 import re
@@ -39,8 +37,7 @@ class ProfileSet:
     def cohort_source(self) -> list[Path]:
         """Well-level cohort input for the embedding/reproducibility figures.
 
-        Prefer CellProfiler's feature-selected cohort file. 
-        Otherwise the per-plate normalized profiles (DeepProfiler publishes no feature_select step).
+        The feature-selected cohort file if present, else the per-plate normalized profiles.
         """
         if self.feature_select is not None:
             return [self.feature_select]

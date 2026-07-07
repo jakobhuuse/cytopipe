@@ -1,8 +1,7 @@
 """The four standard Cell Painting report figures.
 
-Each function renders one figure to ``out_dir`` and returns the written path, or raises
-``FigureSkipped`` when the data can't support it (e.g. too few wells/compounds) so the CLI can
-report a skip instead of crashing the whole report.
+Each renders one figure to ``out_dir`` and returns its path, or raises ``FigureSkipped`` when the
+data is insufficient so the CLI can skip instead of crashing.
 """
 
 import math
@@ -215,7 +214,7 @@ def replicate_reproducibility(
 ) -> Path:
     """Replicate vs. null correlation distributions + percent replicating.
 
-    Replicate score per compound = median pairwise correlation among its wells; the null is
+    Replicate score per compound is the median pairwise correlation among its wells. The null is
     correlations of random cross-compound well pairs. Controls are excluded from the numerator.
     """
     if METADATA_COMPOUND not in cohort:

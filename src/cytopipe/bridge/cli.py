@@ -1,4 +1,4 @@
-"""cytopipe bridge — CLI for building DeepProfiler inputs from CellProfiler output."""
+"""cytopipe bridge: CLI for building DeepProfiler inputs from CellProfiler output."""
 
 from pathlib import Path
 from typing import Annotated

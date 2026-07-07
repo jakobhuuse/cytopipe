@@ -1,4 +1,4 @@
-"""cytopipe command-line interface — composes each package's Typer app/commands."""
+"""cytopipe command-line interface. Composes each package's Typer app and commands."""
 
 import typer
 

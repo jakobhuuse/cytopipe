@@ -18,7 +18,7 @@ def load_platemap(path: Path) -> pd.DataFrame:
 
 
 def _merge_keys(plate_col: str | None, well_col: str) -> tuple[list[str], list[str]]:
-    """Aligned (index-side, platemap-side) join keys; plate optional, well always included."""
+    """Aligned (index-side, platemap-side) join keys. Plate optional, well always included."""
     left, right = [], []
     if plate_col:
         left.append(METADATA_PLATE)

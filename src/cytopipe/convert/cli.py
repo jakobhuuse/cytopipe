@@ -1,4 +1,4 @@
-"""cytopipe convert — CLI for CytoTable conversions to single-cell parquet."""
+"""cytopipe convert: CLI for CytoTable conversions to single-cell parquet."""
 
 from pathlib import Path
 from typing import Annotated

@@ -3,9 +3,8 @@ from pathlib import Path
 
 import pandas as pd
 
-# ChannelNumber → Cell Painting channel, matching the .cppipe NamesAndTypes rules
-# (w1=DNA, w2=Mito, w3=AGP, w4=RNA, w5=ER). CellProfiler image names are Orig{X}; illum
-# functions are Illum{X}.
+# ChannelNumber to Cell Painting channel, matching the .cppipe NamesAndTypes rules
+# (w1=DNA, w2=Mito, w3=AGP, w4=RNA, w5=ER).
 CHANNEL_BY_NUMBER = {1: "DNA", 2: "Mito", 3: "AGP", 4: "RNA", 5: "ER"}
 
 # Filename convention, mirroring the .cppipe Metadata regex:

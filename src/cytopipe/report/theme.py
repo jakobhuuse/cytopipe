@@ -1,8 +1,7 @@
 """Shared matplotlib styling for report figures (validated light-surface palette).
 
-Colours follow the data-viz reference palette: single-hue sequential (blue) for magnitude,
-diverging blue<->red for correlation, a fixed-order categorical set for identity, and
-recessive text/grid ink. Figures render to static PNG/SVG, so only the light surface is used.
+Sequential blue for magnitude, diverging blue/red for correlation, a fixed categorical set for
+identity. Figures render to static PNG/SVG, so only the light surface is used.
 """
 
 import matplotlib as mpl

@@ -1,4 +1,4 @@
-"""cytopipe report — render the four standard Cell Painting figures from a results tree."""
+"""cytopipe report: render the four standard Cell Painting figures from a results tree."""
 
 from collections.abc import Callable
 from enum import StrEnum
