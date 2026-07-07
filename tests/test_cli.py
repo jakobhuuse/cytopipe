@@ -13,9 +13,6 @@ from cytopipe.cli import app
 runner = CliRunner()
 
 
-# --- help / wiring smoke ----------------------------------------------------------------------
-
-
 def test_root_help_lists_commands():
     result = runner.invoke(app, ["--help"])
     assert result.exit_code == 0
@@ -77,7 +74,7 @@ def test_convert_concat_command_runs_and_reports_failure(tmp_path):
     pd.DataFrame({"id": [2]}).to_parquet(parts / "b.parquet")
     dest = tmp_path / "out.parquet"
 
-    ok = runner.invoke(app, ["convert", "concat", str(parts), str(dest)])
+    ok = runner.invoke(app, ["convert", "concat", str(parts), str(dest), "--threads", "1"])
     assert ok.exit_code == 0, ok.output
     assert dest.exists()
 

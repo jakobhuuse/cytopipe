@@ -11,8 +11,6 @@ import pytest
 from cytopipe.report import data
 from cytopipe.report.data import ProfileSet
 
-# --- column / value helpers -------------------------------------------------------------------
-
 
 def test_split_metadata_features_by_prefix_and_dtype():
     df = pd.DataFrame(

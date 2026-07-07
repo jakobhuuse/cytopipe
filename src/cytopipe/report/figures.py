@@ -49,10 +49,6 @@ def _row_zscores(matrix: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
     keep = std[:, 0] > 0
     return centered[keep] / std[keep], keep
 
-
-# --- 1. Plate QC heatmaps -------------------------------------------------------------------
-
-
 def plate_heatmaps(
     plates: list[tuple[str, pd.DataFrame]], value_label: str, out_dir: Path, fmt: str
 ) -> Path:
@@ -108,9 +104,6 @@ def plate_heatmaps(
     fig.savefig(path)
     plt.close(fig)
     return path
-
-
-# --- 2. UMAP embedding ----------------------------------------------------------------------
 
 
 def _scatter_ordered(ax, embedding: np.ndarray, labels: pd.Series, title: str) -> None:
@@ -200,10 +193,6 @@ def embedding_umap(
     plt.close(fig)
     return path
 
-
-# --- 3. Replicate reproducibility -----------------------------------------------------------
-
-
 def replicate_reproducibility(
     cohort: pd.DataFrame,
     out_dir: Path,
@@ -274,9 +263,6 @@ def replicate_reproducibility(
     fig.savefig(path)
     plt.close(fig)
     return path
-
-
-# --- 4. Similarity clustermap ---------------------------------------------------------------
 
 
 def similarity_clustermap(

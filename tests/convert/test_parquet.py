@@ -79,3 +79,16 @@ def test_concat_parquets_schema_mismatch_raises(tmp_path):
 def test_concat_parquets_empty_dir_raises(tmp_path):
     with pytest.raises(FileNotFoundError):
         concat_parquets(tmp_path, tmp_path / "out.parquet")
+
+
+def test_concat_parquets_accepts_threads(tmp_path):
+    # threads bounds DuckDB's worker count so memory does not scale with host cores.
+    parts = tmp_path / "parts"
+    parts.mkdir()
+    con = duckdb.connect()
+    _write_parquet(con, parts / "a.parquet", ["id"], [(1,), (2,)])
+    dest = tmp_path / "out.parquet"
+
+    concat_parquets(parts, dest, threads=1)
+
+    assert con.execute("SELECT count(*) FROM read_parquet(?)", [str(dest)]).fetchone()[0] == 2
