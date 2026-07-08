@@ -9,7 +9,7 @@ from cytopipe.report.cli import report_command
 
 app = typer.Typer(
     name="cytopipe",
-    help="CytoTable-based glue layer for a cell-painting feature-extraction pipeline.",
+    help="Data-management and glue layer for a cell-painting feature-extraction pipeline.",
     no_args_is_help=True,
     add_completion=False,
 )

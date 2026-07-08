@@ -3,6 +3,8 @@ name = "cytopipe"
 version = "1.0.0"
 description = "Data-management/glue layer for a cell-painting feature-extraction pipeline"
 readme = "README.md"
+license = "BSD-3-Clause"
+license-files = ["LICENSE"]
 requires-python = ">=3.13"
 dependencies = [
     "typer>=0.26.8",
@@ -30,6 +32,7 @@ packages = ["src/cytopipe"]
 dev = [
     "ruff>=0.15.20",
     "pytest>=9.1.1",
+    "pytest-cov>=6.0",
 ]
 
 [tool.ruff]
