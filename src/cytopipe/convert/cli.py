@@ -45,10 +45,30 @@ def cellprofiler_command(
     dest_path: Annotated[Path, typer.Argument(help="Destination single-cell parquet path.")],
     threads: ThreadsOption = DEFAULT_THREADS,
 ) -> None:
-    """Convert CellProfiler SQLite output into single-cell parquet."""
-    _run_conversion(
-        "convert cellprofiler", cellprofiler_to_parquet, source_path, dest_path, threads
-    )
+    """Convert CellProfiler SQLite output into single-cell parquet.
+
+    Sources with an empty compartment (no segmented objects) are skipped.
+    """
+    try:
+        result = cellprofiler_to_parquet(source_path, dest_path, threads=threads)
+    except (FileNotFoundError, CytoTableException, ValueError) as exception:
+        typer.secho(f"convert cellprofiler failed: {exception}", fg=typer.colors.RED)
+        raise typer.Exit(1) from exception
+
+    for source in result.skipped:
+        typer.secho(
+            f"convert cellprofiler: skipping {source.name} "
+            "(empty CellProfiler compartment, no segmented objects)",
+            fg=typer.colors.YELLOW,
+        )
+    if not result.produced_output:
+        typer.secho(
+            f"convert cellprofiler: no single cells for {dest_path.name} "
+            "(every source had an empty compartment); wrote no parquet",
+            fg=typer.colors.YELLOW,
+        )
+        return
+    typer.secho(f"{source_path} → {dest_path}", fg=typer.colors.GREEN)
 
 
 @app.command("deepprofiler")

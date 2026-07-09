@@ -2,6 +2,7 @@
 
 from .parquet import (
     DEFAULT_THREADS,
+    CellProfilerConversion,
     cellprofiler_to_parquet,
     concat_parquets,
     deepprofiler_to_parquet,
@@ -9,6 +10,7 @@ from .parquet import (
 
 __all__ = [
     "DEFAULT_THREADS",
+    "CellProfilerConversion",
     "cellprofiler_to_parquet",
     "concat_parquets",
     "deepprofiler_to_parquet",

@@ -1,5 +1,7 @@
+import sqlite3
 import tempfile
 from contextlib import closing
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
@@ -9,6 +11,39 @@ from parsl.config import Config
 from parsl.executors import ThreadPoolExecutor
 
 DEFAULT_THREADS = 2
+
+_CELLPROFILER_COMPARTMENTS = ("Per_Cells", "Per_Nuclei", "Per_Cytoplasm")
+
+
+@dataclass(frozen=True)
+class CellProfilerConversion:
+    """Outcome of ``cellprofiler_to_parquet``: sources converted vs skipped as empty."""
+
+    converted: list[Path]
+    skipped: list[Path]
+
+    @property
+    def produced_output(self) -> bool:
+        """True when at least one source had data and a parquet was written."""
+        return bool(self.converted)
+
+
+def _source_has_all_compartments(sqlite_path: Path) -> bool:
+    """True if every CellProfiler compartment table in the SQLite has at least one row.
+
+    A missing or empty compartment table means CytoTable cannot join single cells
+    from this source (see ``_CELLPROFILER_COMPARTMENTS``).
+    """
+    uri = f"{sqlite_path.resolve().as_uri()}?mode=ro"
+    with closing(sqlite3.connect(uri, uri=True)) as con:
+        for table in _CELLPROFILER_COMPARTMENTS:
+            try:
+                (count,) = con.execute(f'SELECT count(*) FROM "{table}"').fetchone()
+            except sqlite3.OperationalError:
+                return False  # table absent entirely
+            if count == 0:
+                return False
+    return True
 
 
 def convert_to_parquet(
@@ -84,9 +119,37 @@ def concat_parquets(parts_dir: Path, dest_path: Path, *, threads: int = DEFAULT_
 
 def cellprofiler_to_parquet(
     source_path: Path, dest_path: Path, *, threads: int = DEFAULT_THREADS
-) -> None:
-    """Convert CellProfiler SQLite output into single-cell parquet."""
-    convert_to_parquet(source_path, dest_path, "cellprofiler_sqlite", threads=threads)
+) -> CellProfilerConversion:
+    """Convert CellProfiler SQLite output into single-cell parquet.
+
+    Sources whose compartment tables are empty are skipped rather than allowed to
+    abort the whole plate inside CytoTable (see ``_CELLPROFILER_COMPARTMENTS``).
+    When no source has data, no parquet is written and the returned result
+    reports ``produced_output == False`` so the caller can treat the plate as
+    yielding no single cells.
+    """
+    sqlites = sorted(source_path.rglob("*.sqlite")) if source_path.is_dir() else [source_path]
+    if not sqlites:
+        raise FileNotFoundError(f"no CellProfiler SQLite files under {source_path}")
+
+    convertible = [s for s in sqlites if _source_has_all_compartments(s)]
+    skipped = [s for s in sqlites if s not in convertible]
+
+    if not convertible:
+        return CellProfilerConversion(converted=[], skipped=skipped)
+
+    if not skipped:
+        convert_to_parquet(source_path, dest_path, "cellprofiler_sqlite", threads=threads)
+    else:
+        # Convert only the populated sources, staged as symlinks in a temp dir so
+        # CytoTable never opens an empty compartment table.
+        with tempfile.TemporaryDirectory() as tmp:
+            staged = Path(tmp)
+            for source in convertible:
+                (staged / source.name).symlink_to(source.resolve())
+            convert_to_parquet(staged, dest_path, "cellprofiler_sqlite", threads=threads)
+
+    return CellProfilerConversion(converted=convertible, skipped=skipped)
 
 
 def deepprofiler_to_parquet(
