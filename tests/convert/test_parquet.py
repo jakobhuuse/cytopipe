@@ -210,3 +210,23 @@ def test_cellprofiler_to_parquet_skips_empty_source(tmp_path, monkeypatch):
     assert [p.name for p in result.converted] == ["plate.1.sqlite"]
     assert [p.name for p in result.skipped] == ["plate.2.sqlite"]
     assert result.produced_output is True
+
+
+def test_cellprofiler_joins_aliases_plate_and_well_to_canonical_names():
+    # CytoTable's cellprofiler_sqlite preset selects Image_Metadata_Plate/Well; the join
+    # override must alias them to the canonical Metadata_ names pycytominer expects.
+    joins = parquet._cellprofiler_joins()
+    assert "per_image.Image_Metadata_Well AS Metadata_Well," in joins
+    assert "per_image.Image_Metadata_Plate AS Metadata_Plate," in joins
+    # The un-aliased selections must be gone so the parquet never keeps the Image_ prefix.
+    assert "per_image.Image_Metadata_Well," not in joins
+    assert "per_image.Image_Metadata_Plate," not in joins
+
+
+def test_cellprofiler_joins_raises_when_preset_stops_selecting_column(monkeypatch):
+    import cytotable.presets
+
+    stub = {"cellprofiler_sqlite": {"CONFIG_JOINS": "SELECT per_image.Metadata_ImageNumber"}}
+    monkeypatch.setattr(cytotable.presets, "config", stub)
+    with pytest.raises(RuntimeError, match="no longer selects"):
+        parquet._cellprofiler_joins()

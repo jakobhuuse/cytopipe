@@ -10,9 +10,34 @@ from cytotable import convert
 from parsl.config import Config
 from parsl.executors import ThreadPoolExecutor
 
+from cytopipe.columns import METADATA_PLATE, METADATA_WELL
+
 DEFAULT_THREADS = 2
 
 _CELLPROFILER_COMPARTMENTS = ("Per_Cells", "Per_Nuclei", "Per_Cytoplasm")
+
+_CELLPROFILER_JOIN_ALIASES = {
+    "per_image.Image_Metadata_Well": METADATA_WELL,
+    "per_image.Image_Metadata_Plate": METADATA_PLATE,
+}
+
+
+def _cellprofiler_joins() -> str:
+    """
+    Return the cellprofiler_sqlite join with plate/well aliased to canonical Metadata_ names.
+    """
+    from cytotable.presets import config
+
+    joins = config["cellprofiler_sqlite"]["CONFIG_JOINS"]
+    for source_expr, alias in _CELLPROFILER_JOIN_ALIASES.items():
+        needle = f"{source_expr},"
+        if needle not in joins:
+            raise RuntimeError(
+                f"cellprofiler_sqlite preset no longer selects {source_expr!r}; "
+                "the join alias override in cytopipe needs updating"
+            )
+        joins = joins.replace(needle, f"{source_expr} AS {alias},")
+    return joins
 
 
 @dataclass(frozen=True)
@@ -138,8 +163,11 @@ def cellprofiler_to_parquet(
     if not convertible:
         return CellProfilerConversion(converted=[], skipped=skipped)
 
+    joins = _cellprofiler_joins()
     if not skipped:
-        convert_to_parquet(source_path, dest_path, "cellprofiler_sqlite", threads=threads)
+        convert_to_parquet(
+            source_path, dest_path, "cellprofiler_sqlite", threads=threads, joins=joins
+        )
     else:
         # Convert only the populated sources, staged as symlinks in a temp dir so
         # CytoTable never opens an empty compartment table.
@@ -147,7 +175,9 @@ def cellprofiler_to_parquet(
             staged = Path(tmp)
             for source in convertible:
                 (staged / source.name).symlink_to(source.resolve())
-            convert_to_parquet(staged, dest_path, "cellprofiler_sqlite", threads=threads)
+            convert_to_parquet(
+                staged, dest_path, "cellprofiler_sqlite", threads=threads, joins=joins
+            )
 
     return CellProfilerConversion(converted=convertible, skipped=skipped)
 
