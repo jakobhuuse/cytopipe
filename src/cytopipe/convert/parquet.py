@@ -79,7 +79,15 @@ def convert_to_parquet(
     threads: int = DEFAULT_THREADS,
     **convert_kwargs: Any,
 ) -> None:
-    """Run a CytoTable conversion, raising on failure (FileNotFoundError/CytoTableException)."""
+    """Run a CytoTable conversion, raising on failure (FileNotFoundError/CytoTableException).
+
+    Feature columns are written as float32. Single-cell profiles carry no
+    meaningful precision past float32, and halving their width roughly halves the
+    RAM every downstream pandas step needs to hold a plate's cells at once, most
+    importantly pycytominer aggregate, which loads the whole single-cell table.
+    Callers can pass their own ``data_type_cast_map`` to override this.
+    """
+    convert_kwargs.setdefault("data_type_cast_map", {"float": "float32"})
     convert(
         source_path=str(source_path),
         dest_path=str(dest_path),

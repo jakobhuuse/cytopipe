@@ -142,6 +142,34 @@ def test_source_has_all_compartments_false_when_table_missing(tmp_path):
     assert _source_has_all_compartments(db) is False
 
 
+def test_convert_to_parquet_casts_features_to_float32(tmp_path, monkeypatch):
+    # Single-cell features are written as float32 to halve downstream pandas memory
+    # (notably pycytominer aggregate, which loads a plate's whole single-cell table).
+    seen = {}
+    monkeypatch.setattr(parquet, "convert", lambda **kwargs: seen.update(kwargs))
+
+    parquet.convert_to_parquet(
+        tmp_path / "src", tmp_path / "out.parquet", "deepprofiler", threads=1
+    )
+
+    assert seen["data_type_cast_map"] == {"float": "float32"}
+
+
+def test_convert_to_parquet_cast_map_is_overridable(tmp_path, monkeypatch):
+    # A caller-supplied cast map wins over the float32 default.
+    seen = {}
+    monkeypatch.setattr(parquet, "convert", lambda **kwargs: seen.update(kwargs))
+
+    parquet.convert_to_parquet(
+        tmp_path / "src",
+        tmp_path / "out.parquet",
+        "deepprofiler",
+        data_type_cast_map={"integer": "int32"},
+    )
+
+    assert seen["data_type_cast_map"] == {"integer": "int32"}
+
+
 def test_cellprofiler_to_parquet_raises_without_sqlites(tmp_path):
     measurement = tmp_path / "measurement"
     measurement.mkdir()
