@@ -69,7 +69,12 @@ def test_aggregate_command_runs_end_to_end(tmp_path):
 
     ok = runner.invoke(
         app,
-        ["aggregate", str(src), str(dest), "--strata", "Metadata_Plate,Metadata_Well", "--threads", "1"],
+        [
+        "aggregate", str(src), str(dest),
+        "--strata", "Metadata_Plate,Metadata_Well",
+        "--threads",
+        "1"
+        ],
     )
     assert ok.exit_code == 0, ok.output
     assert pd.read_parquet(dest)["Cells_Area"].iloc[0] == 2.0
