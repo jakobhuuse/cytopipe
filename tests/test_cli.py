@@ -15,7 +15,7 @@ runner = CliRunner()
 def test_root_app_registers_all_commands():
     commands = {command.name for command in app.registered_commands}
     groups = {group.name for group in app.registered_groups}
-    assert {"bridge", "loaddata", "report"} <= commands
+    assert {"aggregate", "bridge", "loaddata", "report"} <= commands
     assert "convert" in groups
 
 
@@ -29,6 +29,7 @@ def test_each_command_exposes_help():
         ["convert", "cellprofiler", "--help"],
         ["convert", "deepprofiler", "--help"],
         ["convert", "concat", "--help"],
+        ["aggregate", "--help"],
         ["bridge", "--help"],
         ["loaddata", "--help"],
         ["report", "--help"],
@@ -53,6 +54,34 @@ def test_loaddata_command_runs_end_to_end(make_plate, tmp_path):
     result = runner.invoke(app, ["loaddata", str(plate_dir), str(out)])
     assert result.exit_code == 0, result.output
     assert out.exists()
+
+
+def test_aggregate_command_runs_end_to_end(tmp_path):
+    src = tmp_path / "sc.parquet"
+    pd.DataFrame(
+        {
+            "Metadata_Plate": ["p1", "p1"],
+            "Metadata_Well": ["A01", "A01"],
+            "Cells_Area": [1.0, 3.0],
+        }
+    ).to_parquet(src)
+    dest = tmp_path / "agg.parquet"
+
+    ok = runner.invoke(
+        app,
+        ["aggregate", str(src), str(dest), "--strata", "Metadata_Plate,Metadata_Well", "--threads", "1"],
+    )
+    assert ok.exit_code == 0, ok.output
+    assert pd.read_parquet(dest)["Cells_Area"].iloc[0] == 2.0
+
+    # An unknown feature hits the shared error path and exits non-zero.
+    fail = runner.invoke(
+        app,
+        ["aggregate", str(src), str(tmp_path / "x.parquet"),
+         "--strata", "Metadata_Well", "--features", "Nope"],
+    )
+    assert fail.exit_code == 1
+    assert "failed" in fail.output
 
 
 def test_convert_concat_command_runs_and_reports_failure(tmp_path):

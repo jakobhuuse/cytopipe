@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+import cytotable.constants
 import duckdb
 from cytotable import convert
 from parsl.config import Config
@@ -79,14 +80,8 @@ def convert_to_parquet(
     threads: int = DEFAULT_THREADS,
     **convert_kwargs: Any,
 ) -> None:
-    """Run a CytoTable conversion, raising on failure (FileNotFoundError/CytoTableException).
-
-    Feature columns are written as float32. Single-cell profiles carry no
-    meaningful precision past float32, and halving their width roughly halves the
-    RAM every downstream pandas step needs to hold a plate's cells at once, most
-    importantly pycytominer aggregate, which loads the whole single-cell table.
-    Callers can pass their own ``data_type_cast_map`` to override this.
-    """
+    """Run a CytoTable conversion, raising on failure (FileNotFoundError/CytoTableException)."""
+    cytotable.constants.MAX_THREADS = threads
     convert_kwargs.setdefault("data_type_cast_map", {"float": "float32"})
     convert(
         source_path=str(source_path),
@@ -203,5 +198,7 @@ def deepprofiler_to_parquet(
             threads=threads,
             source_datatype="npz",
             join=False,
+            # No cast map: .npz is not tabular, so CytoTable cannot describe its columns.
+            data_type_cast_map=None,
         )
         concat_parquets(parts_dir, dest_path, threads=threads)

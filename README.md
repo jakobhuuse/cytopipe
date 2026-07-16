@@ -32,17 +32,30 @@ uv run cytopipe --help
 
 ## Usage
 
-The CLI exposes four subcommands:
+The CLI exposes five subcommands:
 
 - `cytopipe loaddata` builds a CellProfiler LoadData CSV (plus per-chunk CSVs) from a plate's raw
   images.
 - `cytopipe bridge` turns CellProfiler output into DeepProfiler inputs (locations and index.csv).
 - `cytopipe convert` runs the CytoTable conversion of CellProfiler or DeepProfiler output to
   single-cell parquet.
+- `cytopipe aggregate` collapses single-cell parquet to well-level median profiles, a
+  memory-bounded streaming replacement for `pycytominer aggregate` (see below).
 - `cytopipe report` renders the standard Cell Painting QC figures from published profiles.
 
-CellProfiler, DeepProfiler, and pycytominer run via their own images in the pipeline, not through
-this CLI.
+CellProfiler, DeepProfiler, and the rest of pycytominer (annotate, normalize, feature selection,
+consensus) run via their own images in the pipeline, not through this CLI.
+
+### Why aggregate lives here
+
+`pycytominer aggregate` reads the whole single-cell table into pandas and upcasts every feature to
+float64 before the groupby-median, so its peak memory is several times the input and scales with
+cell count, which OOM-kills on large plates. `cytopipe aggregate` computes the same median in
+DuckDB, streaming from parquet with a bounded `--memory-limit` and spilling to `--temp-directory`
+instead of holding the plate in RAM. It is a faithful drop-in: values are cast to double to match
+pycytominer's precision, NaN is skipped like pandas `median(skipna=True)`, and groups are ordered
+by strata. It reads `--features infer` (CellProfiler compartment prefixes) or an explicit
+comma-separated list (the DeepProfiler embedding columns).
 
 Run any subcommand with `--help` to see its options:
 

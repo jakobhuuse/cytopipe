@@ -170,6 +170,40 @@ def test_convert_to_parquet_cast_map_is_overridable(tmp_path, monkeypatch):
     assert seen["data_type_cast_map"] == {"integer": "int32"}
 
 
+def test_convert_to_parquet_cast_map_can_be_disabled(tmp_path, monkeypatch):
+    # An explicit None must survive the setdefault, not be replaced by float32.
+    seen = {}
+    monkeypatch.setattr(parquet, "convert", lambda **kwargs: seen.update(kwargs))
+
+    parquet.convert_to_parquet(
+        tmp_path / "src",
+        tmp_path / "out.parquet",
+        "deepprofiler",
+        data_type_cast_map=None,
+    )
+
+    assert seen["data_type_cast_map"] is None
+
+
+def test_deepprofiler_to_parquet_disables_cast_map(tmp_path, monkeypatch):
+    # .npz is non-tabular: CytoTable returns a [None] column sentinel for it, and
+    # any non-None data_type_cast_map makes _prep_cast_column_data_types map the
+    # cast over that sentinel and raise TypeError. Passing a cast map here is a
+    # crash, not a preference.
+    seen = {}
+
+    def fake_convert_to_parquet(source_path, dest_path, preset, *, threads=2, **kwargs):
+        seen.update(kwargs)
+        Path(dest_path).mkdir(parents=True, exist_ok=True)
+
+    monkeypatch.setattr(parquet, "convert_to_parquet", fake_convert_to_parquet)
+    monkeypatch.setattr(parquet, "concat_parquets", lambda *a, **k: None)
+
+    parquet.deepprofiler_to_parquet(tmp_path / "src", tmp_path / "out.parquet")
+
+    assert seen["data_type_cast_map"] is None
+
+
 def test_cellprofiler_to_parquet_raises_without_sqlites(tmp_path):
     measurement = tmp_path / "measurement"
     measurement.mkdir()
