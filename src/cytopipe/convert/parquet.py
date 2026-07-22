@@ -15,13 +15,6 @@ from cytopipe.columns import METADATA_PLATE, METADATA_WELL
 
 DEFAULT_THREADS = 2
 
-_CELLPROFILER_COMPARTMENTS = ("Per_Cells", "Per_Nuclei", "Per_Cytoplasm")
-
-_CELLPROFILER_JOIN_ALIASES = {
-    "per_image.Image_Metadata_Well": METADATA_WELL,
-    "per_image.Image_Metadata_Plate": METADATA_PLATE,
-}
-
 
 def _cellprofiler_joins() -> str:
     """
@@ -30,7 +23,11 @@ def _cellprofiler_joins() -> str:
     from cytotable.presets import config
 
     joins = config["cellprofiler_sqlite"]["CONFIG_JOINS"]
-    for source_expr, alias in _CELLPROFILER_JOIN_ALIASES.items():
+    aliases = {
+        "per_image.Image_Metadata_Well": METADATA_WELL,
+        "per_image.Image_Metadata_Plate": METADATA_PLATE,
+    }
+    for source_expr, alias in aliases.items():
         needle = f"{source_expr},"
         if needle not in joins:
             raise RuntimeError(
@@ -58,11 +55,11 @@ def _source_has_all_compartments(sqlite_path: Path) -> bool:
     """True if every CellProfiler compartment table in the SQLite has at least one row.
 
     A missing or empty compartment table means CytoTable cannot join single cells
-    from this source (see ``_CELLPROFILER_COMPARTMENTS``).
+    from this source.
     """
     uri = f"{sqlite_path.resolve().as_uri()}?mode=ro"
     with closing(sqlite3.connect(uri, uri=True)) as con:
-        for table in _CELLPROFILER_COMPARTMENTS:
+        for table in ("Per_Cells", "Per_Nuclei", "Per_Cytoplasm"):
             try:
                 (count,) = con.execute(f'SELECT count(*) FROM "{table}"').fetchone()
             except sqlite3.OperationalError:
@@ -146,15 +143,23 @@ def concat_parquets(parts_dir: Path, dest_path: Path, *, threads: int = DEFAULT_
 
 
 def cellprofiler_to_parquet(
-    source_path: Path, dest_path: Path, *, threads: int = DEFAULT_THREADS
+    source_path: Path,
+    dest_path: Path,
+    *,
+    threads: int = DEFAULT_THREADS,
+    chunk_size: int | None = None,
 ) -> CellProfilerConversion:
     """Convert CellProfiler SQLite output into single-cell parquet.
 
     Sources whose compartment tables are empty are skipped rather than allowed to
-    abort the whole plate inside CytoTable (see ``_CELLPROFILER_COMPARTMENTS``).
+    abort the whole plate inside CytoTable.
     When no source has data, no parquet is written and the returned result
     reports ``produced_output == False`` so the caller can treat the plate as
     yielding no single cells.
+
+    ``chunk_size`` bounds the row count CytoTable joins per pagination chunk
+    (default: the ``cellprofiler_sqlite`` preset's own value, 1000). Lower it
+    to trade join throughput for a smaller peak memory footprint.
     """
     sqlites = sorted(source_path.rglob("*.sqlite")) if source_path.is_dir() else [source_path]
     if not sqlites:
@@ -169,7 +174,12 @@ def cellprofiler_to_parquet(
     joins = _cellprofiler_joins()
     if not skipped:
         convert_to_parquet(
-            source_path, dest_path, "cellprofiler_sqlite", threads=threads, joins=joins
+            source_path,
+            dest_path,
+            "cellprofiler_sqlite",
+            threads=threads,
+            joins=joins,
+            chunk_size=chunk_size,
         )
     else:
         # Convert only the populated sources, staged as symlinks in a temp dir so
@@ -179,7 +189,12 @@ def cellprofiler_to_parquet(
             for source in convertible:
                 (staged / source.name).symlink_to(source.resolve())
             convert_to_parquet(
-                staged, dest_path, "cellprofiler_sqlite", threads=threads, joins=joins
+                staged,
+                dest_path,
+                "cellprofiler_sqlite",
+                threads=threads,
+                joins=joins,
+                chunk_size=chunk_size,
             )
 
     return CellProfilerConversion(converted=convertible, skipped=skipped)

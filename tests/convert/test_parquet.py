@@ -274,6 +274,44 @@ def test_cellprofiler_to_parquet_skips_empty_source(tmp_path, monkeypatch):
     assert result.produced_output is True
 
 
+def test_cellprofiler_to_parquet_forwards_chunk_size(tmp_path, monkeypatch):
+    measurement = tmp_path / "measurement"
+    measurement.mkdir()
+    _make_cp_sqlite(measurement / "plate.1.sqlite", objects=2)
+    dest = tmp_path / "out.parquet"
+    seen = {}
+
+    def fake_convert(source_path, dest_path, preset, *, threads=2, **kwargs):
+        seen.update(kwargs)
+        Path(dest_path).write_bytes(b"")
+
+    monkeypatch.setattr(parquet, "convert_to_parquet", fake_convert)
+
+    cellprofiler_to_parquet(measurement, dest, threads=1, chunk_size=200)
+
+    assert seen["chunk_size"] == 200
+
+
+def test_cellprofiler_to_parquet_forwards_chunk_size_when_staging(tmp_path, monkeypatch):
+    # Same as above, but through the symlink-staging branch (some sources skipped).
+    measurement = tmp_path / "measurement"
+    measurement.mkdir()
+    _make_cp_sqlite(measurement / "plate.1.sqlite", objects=3)  # populated
+    _make_cp_sqlite(measurement / "plate.2.sqlite", objects=0)  # empty, forces staging
+    dest = tmp_path / "out.parquet"
+    seen = {}
+
+    def fake_convert(source_path, dest_path, preset, *, threads=2, **kwargs):
+        seen.update(kwargs)
+        Path(dest_path).write_bytes(b"")
+
+    monkeypatch.setattr(parquet, "convert_to_parquet", fake_convert)
+
+    cellprofiler_to_parquet(measurement, dest, threads=1, chunk_size=200)
+
+    assert seen["chunk_size"] == 200
+
+
 def test_cellprofiler_joins_aliases_plate_and_well_to_canonical_names():
     # CytoTable's cellprofiler_sqlite preset selects Image_Metadata_Plate/Well; the join
     # override must alias them to the canonical Metadata_ names pycytominer expects.

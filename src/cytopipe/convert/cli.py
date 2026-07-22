@@ -23,6 +23,14 @@ ThreadsOption = Annotated[
     typer.Option(help="Max parallel workers, bounding memory. Pass the task's CPU count."),
 ]
 
+ChunkSizeOption = Annotated[
+    int | None,
+    typer.Option(
+        help="Rows per join pagination chunk, bounding memory. "
+        "Defaults to CytoTable's own preset value (1000); lower it to reduce peak memory."
+    ),
+]
+
 
 def _run_conversion(
     label: str, convert_fn, source_path: Path, dest_path: Path, threads: int
@@ -44,13 +52,16 @@ def cellprofiler_command(
     ],
     dest_path: Annotated[Path, typer.Argument(help="Destination single-cell parquet path.")],
     threads: ThreadsOption = DEFAULT_THREADS,
+    chunk_size: ChunkSizeOption = None,
 ) -> None:
     """Convert CellProfiler SQLite output into single-cell parquet.
 
     Sources with an empty compartment (no segmented objects) are skipped.
     """
     try:
-        result = cellprofiler_to_parquet(source_path, dest_path, threads=threads)
+        result = cellprofiler_to_parquet(
+            source_path, dest_path, threads=threads, chunk_size=chunk_size
+        )
     except (FileNotFoundError, CytoTableException, ValueError) as exception:
         typer.secho(f"convert cellprofiler failed: {exception}", fg=typer.colors.RED)
         raise typer.Exit(1) from exception
