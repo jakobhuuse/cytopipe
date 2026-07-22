@@ -7,7 +7,7 @@ license = "BSD-3-Clause"
 license-files = ["LICENSE"]
 requires-python = ">=3.13"
 dependencies = [
-    "typer>=0.26.8",
+    "typer>=0.27.0",
     "cytotable>=1.2.3",
     "pandas>=3.0.3",
     "matplotlib>=3.8",
@@ -15,7 +15,7 @@ dependencies = [
     "scikit-learn>=1.4",
     "umap-learn>=0.5",
     "duckdb>=1.5.4",
-    "pyarrow>=15",
+    "pyarrow>=25.0.0",
 ]
 
 [project.scripts]
@@ -30,7 +30,7 @@ packages = ["src/cytopipe"]
 
 [dependency-groups]
 dev = [
-    "ruff>=0.15.20",
+    "ruff>=0.15.22",
     "pytest>=9.1.1",
     "pytest-cov>=6.0",
 ]
