@@ -11,6 +11,7 @@ from cytopipe.convert.parquet import (
     _source_has_all_compartments,
     cellprofiler_to_parquet,
     concat_parquets,
+    write_skipped_manifest,
 )
 
 
@@ -310,6 +311,19 @@ def test_cellprofiler_to_parquet_forwards_chunk_size_when_staging(tmp_path, monk
     cellprofiler_to_parquet(measurement, dest, threads=1, chunk_size=200)
 
     assert seen["chunk_size"] == 200
+
+
+def test_write_skipped_manifest_lists_sources_next_to_dest(tmp_path):
+    dest = tmp_path / "26162.parquet"
+    measurement = tmp_path / "measurement"
+    skipped = [measurement / "26162.2.sqlite", measurement / "26162.1.sqlite"]
+
+    manifest = write_skipped_manifest(dest, skipped)
+
+    assert manifest == tmp_path / "26162.parquet.skipped.txt"
+    text = manifest.read_text()
+    # Sorted, so callers get a stable order regardless of scan order.
+    assert text.index("26162.1.sqlite") < text.index("26162.2.sqlite")
 
 
 def test_cellprofiler_joins_aliases_plate_and_well_to_canonical_names():

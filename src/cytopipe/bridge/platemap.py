@@ -41,6 +41,16 @@ def unmatched_wells(
     return sorted({"/".join(k) for k in keys if k not in have})
 
 
+def duplicate_keys(platemap: pd.DataFrame, plate_col: str | None, well_col: str) -> list[str]:
+    """Return plate/well keys (as strings) that appear more than once in the plate map."""
+    _, right = _merge_keys(plate_col, well_col)
+    keys = platemap[right].astype(str)
+    dupe_mask = keys.duplicated(keep=False)
+    if not dupe_mask.any():
+        return []
+    return sorted({"/".join(row) for row in keys[dupe_mask].itertuples(index=False, name=None)})
+
+
 def join_platemap(
     index: pd.DataFrame,
     platemap: pd.DataFrame,
@@ -48,8 +58,21 @@ def join_platemap(
     well_col: str,
     cols: tuple[str, ...] | None,
 ) -> pd.DataFrame:
-    """Left-join plate-map onto the index by plate/well key(s) (join keys always kept)."""
+    """Left-join plate-map onto the index by plate/well key(s) (join keys always kept).
+
+    Raises if the plate map has more than one row for the same plate/well key: a left-join
+    would silently fan out every matching index row (e.g. every imaging site in that well)
+    once per duplicate, which is never wanted and usually means the plate map itself has a
+    data-entry error.
+    """
     left, right = _merge_keys(plate_col, well_col)
+    dupes = duplicate_keys(platemap, plate_col, well_col)
+    if dupes:
+        raise ValueError(
+            f"Plate map has more than one row for key(s): {', '.join(dupes)}. "
+            "A left-join would silently duplicate every matching index row per extra "
+            "match; fix the plate map so each plate/well key appears once."
+        )
     if cols is not None:
         missing = [c for c in [*right, *cols] if c not in platemap.columns]
         if missing:

@@ -1,5 +1,6 @@
 """cytopipe report: render the four standard Cell Painting figures from a results tree."""
 
+import traceback
 from collections.abc import Callable
 from enum import StrEnum
 from pathlib import Path
@@ -47,16 +48,25 @@ def _parse_only(only: str | None) -> set[int]:
     return chosen
 
 
-def _emit(label: str, build: Callable[[], Path]) -> None:
-    """Run one figure builder, reporting written/skipped/failed without aborting the others."""
+def _emit(label: str, build: Callable[[], Path]) -> bool:
+    """Run one figure builder, reporting written/skipped/failed without aborting the others.
+
+    Returns True if the figure genuinely failed (an unexpected exception, not a FigureSkipped),
+    so the caller can exit non-zero instead of reporting overall success while a real bug in
+    figure generation was silently swallowed.
+    """
     try:
         path = build()
     except FigureSkipped as skip:
         typer.secho(f"{label}: skipped ({skip})", fg=typer.colors.YELLOW)
-    except Exception as error:
-        typer.secho(f"{label}: failed ({error})", fg=typer.colors.RED)
+        return False
+    except Exception:
+        typer.secho(f"{label}: failed", fg=typer.colors.RED)
+        typer.secho(traceback.format_exc(), fg=typer.colors.RED)
+        return True
     else:
         typer.secho(f"{label} → {path}", fg=typer.colors.GREEN)
+        return False
 
 
 def report_command(
@@ -97,19 +107,29 @@ def report_command(
     # Load the well-level cohort once. Shared by figures 2 and 3.
     cohort = load_profiles(profiles.cohort_source()) if selected & {2, 3} else None
 
+    failed = False
     if 1 in selected:
         plates, value_label = plate_well_values(profiles)
-        _emit("1 plate heatmaps", lambda: plate_heatmaps(plates, value_label, out, ext))
+        failed |= _emit(
+            "1 plate heatmaps", lambda: plate_heatmaps(plates, value_label, out, ext)
+        )
     if 2 in selected:
-        _emit("2 UMAP embedding", lambda: embedding_umap(cohort, out, ext, control=control))
+        failed |= _emit(
+            "2 UMAP embedding", lambda: embedding_umap(cohort, out, ext, control=control)
+        )
     if 3 in selected:
-        _emit(
+        failed |= _emit(
             "3 replicate reproducibility",
             lambda: replicate_reproducibility(cohort, out, ext, control=control),
         )
     if 4 in selected:
         consensus = profiles.consensus
-        _emit(
+        failed |= _emit(
             "4 similarity clustermap",
             lambda: similarity_clustermap(consensus, out, ext, control=control, top_n=top_n),
         )
+
+    if failed:
+        # A genuine bug in figure generation, not just insufficient data (FigureSkipped),
+        # must not report overall success: the caller shouldn't have to grep logs to notice.
+        raise typer.Exit(1)

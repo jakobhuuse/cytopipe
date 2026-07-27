@@ -6,6 +6,7 @@ from .parquet import (
     cellprofiler_to_parquet,
     concat_parquets,
     deepprofiler_to_parquet,
+    write_skipped_manifest,
 )
 
 __all__ = [
@@ -14,4 +15,5 @@ __all__ = [
     "cellprofiler_to_parquet",
     "concat_parquets",
     "deepprofiler_to_parquet",
+    "write_skipped_manifest",
 ]

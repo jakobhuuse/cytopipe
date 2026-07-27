@@ -11,6 +11,7 @@ from . import (
     cellprofiler_to_parquet,
     concat_parquets,
     deepprofiler_to_parquet,
+    write_skipped_manifest,
 )
 
 app = typer.Typer(
@@ -72,6 +73,8 @@ def cellprofiler_command(
             "(empty CellProfiler compartment, no segmented objects)",
             fg=typer.colors.YELLOW,
         )
+    if result.skipped:
+        write_skipped_manifest(dest_path, result.skipped)
     if not result.produced_output:
         typer.secho(
             f"convert cellprofiler: no single cells for {dest_path.name} "

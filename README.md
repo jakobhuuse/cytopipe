@@ -38,9 +38,13 @@ The CLI exposes five subcommands:
 
 CellProfiler, DeepProfiler, and the rest of pycytominer (annotate, normalize, feature selection, consensus) run via their own images in the pipeline, not through this CLI.
 
+### Warning: verify the channel mapping for a new acquisition protocol
+
+`cytopipe loaddata` assigns each filename's `w<N>` channel number to a Cell Painting stain via a hardcoded table (`CHANNEL_BY_NUMBER` in [scan.py](src/cytopipe/loaddata/scan.py), currently `w1=DNA, w2=Mito, w3=AGP, w4=RNA, w5=ER`). This is an assumption about the microscope's filter/channel configuration, not something cytopipe can verify on its own. If it's wrong for your acquisition, every measurement and every DeepProfiler embedding channel gets silently mislabeled by stain, with no error raised anywhere, results just come out wrong. Before running this against images from a new instrument, protocol, or filter configuration, confirm this mapping against the actual acquisition setup, not just against the code.
+
 ### Why aggregate lives here
 
-`pycytominer aggregate` reads the whole single-cell table into pandas and upcasts every feature to float64 before the groupby-median, so its peak memory is several times the input and scales with cell count, which OOM-kills on large plates. `cytopipe aggregate` computes the same median in DuckDB, streaming from parquet with a bounded `--memory-limit` and spilling to `--temp-directory` instead of holding the plate in RAM. Values are cast to double to match pycytominer's precision, NaN is skipped like pandas `median(skipna=True)`, and groups are ordered by strata. It reads `--features infer` (CellProfiler compartment prefixes) or an explicit comma-separated list (the DeepProfiler embedding columns).
+`pycytominer aggregate` reads the whole single-cell table into pandas and upcasts every feature to float64 before the groupby-median, so its peak memory is several times the input and scales with cell count, which OOM-kills on large plates. `cytopipe aggregate` computes the same median in DuckDB, streaming from parquet with a bounded `--memory-limit` and spilling to `--temp-directory` instead of holding the plate in RAM. Values are cast to double before the median so the arithmetic itself runs at pycytominer's precision, NaN is skipped like pandas `median(skipna=True)`, and groups are ordered by strata. It reads `--features infer` (CellProfiler compartment prefixes) or an explicit comma-separated list (the DeepProfiler embedding columns). Note this isn't a guarantee of bit-exact parity with a pycytominer run end to end, the CellProfiler branch's single-cell parquet was already downcast to float32 during the earlier CytoTable conversion, so results are float32-precision-limited going in even though the median math over them is exact.
 
 Run any subcommand with `--help` to see its options:
 

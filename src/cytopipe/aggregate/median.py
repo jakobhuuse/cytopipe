@@ -3,7 +3,15 @@
 Equivalence with pycytominer's median is deliberate:
 
 - Values are cast to DOUBLE before aggregating, matching pycytominer's
-  ``astype(float)`` (float64), so medians agree to full precision.
+  ``astype(float)`` (float64), so the median arithmetic itself runs at the same
+  precision pycytominer uses. This is NOT a guarantee of bit-exact agreement
+  with a pycytominer run end to end: for the CellProfiler branch, the
+  single-cell parquet this reads was already downcast to float32 during the
+  earlier CytoTable conversion step (``convert/parquet.py``), which a
+  pycytominer pipeline reading CellProfiler's native float64 SQLite/CSV output
+  directly would not do. The values aggregated here are therefore only as
+  precise as that upstream float32 cast, not full float64, even though the
+  median computation over them is exact.
 - NaN is mapped to NULL per feature so DuckDB skips it, matching pandas
   ``median(skipna=True)``. DuckDB otherwise treats NaN as an ordinary value that
   sorts above everything, which would shift the median wherever CellProfiler

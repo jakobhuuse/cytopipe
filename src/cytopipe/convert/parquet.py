@@ -69,6 +69,25 @@ def _source_has_all_compartments(sqlite_path: Path) -> bool:
     return True
 
 
+def write_skipped_manifest(dest_path: Path, skipped: list[Path]) -> Path:
+    """Persist which sources were skipped as empty, next to ``dest_path``.
+
+    ``cellprofiler_to_parquet`` only reports skipped sources to the caller; without this,
+    a chunk with zero segmented objects (e.g. every cell in it died) simply vanishes from
+    the published results with nothing but a console line to explain why, easy to miss in
+    a batch run. The manifest survives in ``--outdir`` for anyone auditing the results later.
+    """
+    manifest_path = dest_path.parent / f"{dest_path.name}.skipped.txt"
+    manifest_path.parent.mkdir(parents=True, exist_ok=True)
+    lines = [
+        "# Sources skipped by `cytopipe convert cellprofiler`: empty CellProfiler",
+        "# compartment (Per_Cells/Per_Nuclei/Per_Cytoplasm), no segmented objects.",
+        *(str(source) for source in sorted(skipped)),
+    ]
+    manifest_path.write_text("".join(f"{line}\n" for line in lines))
+    return manifest_path
+
+
 def convert_to_parquet(
     source_path: Path,
     dest_path: Path,

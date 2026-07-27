@@ -3,8 +3,16 @@ from pathlib import Path
 
 import pandas as pd
 
-# ChannelNumber to Cell Painting channel, matching the .cppipe NamesAndTypes rules
-# (w1=DNA, w2=Mito, w3=AGP, w4=RNA, w5=ER).
+# ChannelNumber to Cell Painting channel (w1=DNA, w2=Mito, w3=AGP, w4=RNA, w5=ER).
+#
+# WARNING: this is a hardcoded assumption about the acquisition's filter/channel
+# configuration, not something this codebase can verify. It used to match a
+# NamesAndTypes rule in the .cppipe files; those were migrated to LoadData-CSV
+# input and no longer state this mapping anywhere, so nothing here cross-checks
+# it. If it's wrong, every measurement and every DeepProfiler embedding channel
+# is silently mislabeled by stain, with no error raised anywhere. Verify this
+# against the microscope's actual channel configuration before trusting results
+# from a new acquisition protocol, see the README warning.
 CHANNEL_BY_NUMBER = {1: "DNA", 2: "Mito", 3: "AGP", 4: "RNA", 5: "ER"}
 
 # Filename convention, mirroring the .cppipe Metadata regex:
