@@ -71,6 +71,23 @@ def test_scan_qc_metrics_raises_when_nothing_found(tmp_path):
         scan_qc_metrics(tmp_path)
 
 
+def test_scan_qc_metrics_follows_symlinked_chunk_dirs(tmp_path, make_qc_dir):
+    # Mirrors how Nextflow's CYTOPIPE_QC_REVIEW stages each chunk's CELLPROFILER_QC output
+    # directory into qc_input/ as a symlink rather than a real directory.
+    real_chunk = tmp_path / "real" / "26159.1"
+    make_qc_dir(real_chunk, _row("A02", 1, dna=-2.0), chunk=1)
+
+    qc_input = tmp_path / "qc_input"
+    qc_input.mkdir()
+    (qc_input / "26159.1").symlink_to(real_chunk, target_is_directory=True)
+
+    metrics = scan_qc_metrics(qc_input)
+
+    assert len(metrics) == 1
+    assert metrics["overlay_path"].iloc[0] is not None
+    assert metrics["overlay_path"].iloc[0].exists()
+
+
 def test_channel_columns_maps_channel_name_to_column(tmp_path, make_qc_dir):
     make_qc_dir(tmp_path, _row("A02", 1))
     metrics = scan_qc_metrics(tmp_path)

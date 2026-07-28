@@ -1,5 +1,6 @@
 """Aggregate per-image QC metrics and overlay thumbnails from a CellProfiler QC output tree."""
 
+import os
 from pathlib import Path
 
 import pandas as pd
@@ -9,15 +10,27 @@ from cytopipe.columns import METADATA_PLATE, METADATA_SITE, METADATA_WELL
 POWERLOGLOGSLOPE_PREFIX = "ImageQuality_PowerLogLogSlope_Orig"
 
 
-def _overlay_path(qc_dir: Path, plate: str, well: str, site: int) -> Path | None:
-    """Resolve the Overlays/<plate>_<well>_<site>_overlay.png thumbnail for one image set.
+def _find_dirs(root: Path, name: str) -> list[Path]:
+    """Directories named ``name`` anywhere under ``root``, however deep.
 
-    Globs recursively rather than assuming a fixed nesting depth, since ``qc_dir`` may hold a
-    single plate's chunks directly or several plates' chunks each under their own subdirectory
-    (e.g. when combining a whole run's images into one gallery).
+    Walks with ``followlinks=True`` rather than using ``Path.glob("**/...")``, since Nextflow
+    stages each chunk's output directory into the review process as a symlink, and pathlib's
+    ``**`` silently refuses to descend into symlinked directories.
     """
-    matches = sorted(qc_dir.glob(f"**/Overlays/{plate}_{well}_{site}_overlay.png"))
-    return matches[0] if matches else None
+    return [
+        Path(dirpath)
+        for dirpath, _dirnames, _filenames in os.walk(root, followlinks=True)
+        if Path(dirpath).name == name
+    ]
+
+
+def _overlay_index(qc_dir: Path) -> dict[str, Path]:
+    """Map ``<plate>_<well>_<site>_overlay.png`` filename to its path, across every chunk."""
+    return {
+        png.name: png
+        for overlays_dir in _find_dirs(qc_dir, "Overlays")
+        for png in overlays_dir.glob("*.png")
+    }
 
 
 def scan_qc_metrics(qc_dir: Path) -> pd.DataFrame:
@@ -25,13 +38,18 @@ def scan_qc_metrics(qc_dir: Path) -> pd.DataFrame:
 
     Keeps ``Metadata_Plate``/``Well``/``Site`` and every ``PowerLogLogSlope`` column, and adds
     an ``overlay_path`` column resolving each row's matching review thumbnail (``None`` if not
-    found). Both ``1_QC.cppipe`` and ``nuclei.cppipe`` write this same layout. The search is
-    recursive, so ``qc_dir`` may be one plate's chunk outputs or a whole run's worth across
-    several plates, each in their own subdirectory. Rows are told apart by their own
-    ``Metadata_Plate``/``Well``/``Site`` values, not by directory structure.
+    found). Both ``1_QC.cppipe`` and ``nuclei.cppipe`` write this same layout. The search
+    recurses through symlinks, so ``qc_dir`` may be one plate's chunk outputs or a whole run's
+    worth across several plates, each in their own subdirectory (or symlinked chunk directory,
+    as Nextflow stages them). Rows are told apart by their own ``Metadata_Plate``/``Well``/
+    ``Site`` values, not by directory structure.
     """
     qc_dir = Path(qc_dir)
-    paths = sorted(qc_dir.glob("**/QCb3/*/Image.csv"))
+    paths = sorted(
+        image_csv
+        for qcb3_dir in _find_dirs(qc_dir, "QCb3")
+        for image_csv in qcb3_dir.glob("*/Image.csv")
+    )
     if not paths:
         raise FileNotFoundError(f"no QCb3/*/Image.csv files found under {qc_dir}")
 
@@ -44,8 +62,9 @@ def scan_qc_metrics(qc_dir: Path) -> pd.DataFrame:
         frames.append(frame[keep])
     metrics = pd.concat(frames, ignore_index=True)
 
+    overlay_index = _overlay_index(qc_dir)
     metrics["overlay_path"] = [
-        _overlay_path(qc_dir, row[METADATA_PLATE], row[METADATA_WELL], int(row[METADATA_SITE]))
+        overlay_index.get(f"{row[METADATA_PLATE]}_{row[METADATA_WELL]}_{int(row[METADATA_SITE])}_overlay.png")
         for _, row in metrics.iterrows()
     ]
     return metrics
