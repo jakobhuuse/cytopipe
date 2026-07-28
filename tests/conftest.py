@@ -48,6 +48,33 @@ def make_plate():
 
 
 @pytest.fixture
+def make_qc_dir():
+    """Factory building a qc/<plate>/ tree, chunk*/QCb3/<Plate>_<Well>/Image.csv (one row per
+    call, appended if the well's Image.csv already exists) plus a matching Overlays/*.png.
+    """
+
+    def _make(root: Path, row: dict, chunk: int = 1) -> Path:
+        plate, well, site = row["Metadata_Plate"], row["Metadata_Well"], row["Metadata_Site"]
+        chunk_dir = root / f"chunk{chunk}"
+
+        well_dir = chunk_dir / "QCb3" / f"{plate}_{well}"
+        well_dir.mkdir(parents=True, exist_ok=True)
+        csv_path = well_dir / "Image.csv"
+        frame = pd.DataFrame([row])
+        if csv_path.exists():
+            frame = pd.concat([pd.read_csv(csv_path), frame], ignore_index=True)
+        frame.to_csv(csv_path, index=False)
+
+        overlays_dir = chunk_dir / "Overlays"
+        overlays_dir.mkdir(parents=True, exist_ok=True)
+        (overlays_dir / f"{plate}_{well}_{site}_overlay.png").write_bytes(b"fake-png-bytes")
+
+        return root
+
+    return _make
+
+
+@pytest.fixture
 def synthetic_cohort():
     """Factory: well-level normalized-style frame (Metadata_* + efficientnet_*) with signal."""
 

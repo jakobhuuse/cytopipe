@@ -21,7 +21,7 @@ runner = CliRunner()
 def test_root_app_registers_all_commands():
     commands = {command.name for command in app.registered_commands}
     groups = {group.name for group in app.registered_groups}
-    assert {"aggregate", "bridge", "loaddata", "report"} <= commands
+    assert {"aggregate", "bridge", "loaddata", "loaddata-filter", "qc", "report"} <= commands
     assert "convert" in groups
 
 
@@ -38,6 +38,8 @@ def test_each_command_exposes_help():
         ["aggregate", "--help"],
         ["bridge", "--help"],
         ["loaddata", "--help"],
+        ["loaddata-filter", "--help"],
+        ["qc", "--help"],
         ["report", "--help"],
     ):
         assert runner.invoke(app, args).exit_code == 0
@@ -60,6 +62,40 @@ def test_loaddata_command_runs_end_to_end(make_plate, tmp_path):
     result = runner.invoke(app, ["loaddata", str(plate_dir), str(out)])
     assert result.exit_code == 0, result.output
     assert out.exists()
+
+
+def test_loaddata_filter_command_runs_end_to_end(make_plate, tmp_path):
+    plate_dir = make_plate(tmp_path / "26159")
+    load_data_csv = tmp_path / "ld.csv"
+    runner.invoke(app, ["loaddata", str(plate_dir), str(load_data_csv)])
+
+    exclude_csv = tmp_path / "excluded.csv"
+    pd.DataFrame(
+        {"Metadata_Plate": ["26159"], "Metadata_Well": ["A02"], "Metadata_Site": [1]}
+    ).to_csv(exclude_csv, index=False)
+
+    out = tmp_path / "filtered.csv"
+    result = runner.invoke(
+        app, ["loaddata-filter", str(load_data_csv), str(exclude_csv), str(out)]
+    )
+    assert result.exit_code == 0, result.output
+    assert len(pd.read_csv(out)) == 1  # one of the two sites in make_plate's default dropped
+
+
+def test_qc_review_command_runs_end_to_end(tmp_path, make_qc_dir):
+    row = {
+        "Metadata_Plate": "26159",
+        "Metadata_Well": "A02",
+        "Metadata_Site": 1,
+        "ImageQuality_PowerLogLogSlope_OrigDNA": -2.0,
+    }
+    qc_dir = make_qc_dir(tmp_path / "qc", row)
+    out_dir = tmp_path / "review"
+
+    result = runner.invoke(app, ["qc", str(qc_dir), "--out-dir", str(out_dir)])
+
+    assert result.exit_code == 0, result.output
+    assert (out_dir / "gallery.html").exists()
 
 
 def test_aggregate_command_runs_end_to_end(tmp_path):

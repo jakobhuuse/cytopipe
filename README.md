@@ -28,12 +28,14 @@ uv run cytopipe --help
 
 ## Usage
 
-The CLI exposes five subcommands:
+The CLI exposes seven subcommands.
 
 - `cytopipe loaddata` builds a CellProfiler LoadData CSV (plus per-chunk CSVs) from a plate's raw images.
+- `cytopipe loaddata-filter` drops QC-excluded (Plate, Well, Site) image sets from an already-built LoadData CSV.
 - `cytopipe bridge` turns CellProfiler output into DeepProfiler inputs (locations and index.csv).
 - `cytopipe convert` runs the CytoTable conversion of CellProfiler or DeepProfiler output to single-cell parquet, and concatenates parquet parts back into one file.
 - `cytopipe aggregate` collapses single-cell parquet to well-level median profiles, a memory-bounded streaming replacement for `pycytominer aggregate` (see below).
+- `cytopipe qc` scans a plate's CellProfiler QC output and builds a self-contained HTML gallery for reviewing image quality by eye, with a button to download an exclusion list.
 - `cytopipe report` renders the standard Cell Painting QC figures from published profiles.
 
 CellProfiler, DeepProfiler, and the rest of pycytominer (annotate, normalize, feature selection, consensus) run via their own images in the pipeline, not through this CLI.

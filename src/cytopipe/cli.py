@@ -5,7 +5,8 @@ import typer
 from cytopipe.aggregate.cli import aggregate_command
 from cytopipe.bridge.cli import bridge_command
 from cytopipe.convert.cli import app as convert_app
-from cytopipe.loaddata.cli import loaddata_command
+from cytopipe.loaddata.cli import loaddata_command, loaddata_filter_command
+from cytopipe.qc.cli import qc_review_command
 from cytopipe.report.cli import report_command
 
 app = typer.Typer(
@@ -20,4 +21,6 @@ app.add_typer(convert_app, name="convert")
 app.command("aggregate")(aggregate_command)
 app.command("bridge")(bridge_command)
 app.command("loaddata")(loaddata_command)
+app.command("loaddata-filter")(loaddata_filter_command)
+app.command("qc")(qc_review_command)
 app.command("report")(report_command)
