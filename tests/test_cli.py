@@ -87,7 +87,10 @@ def test_qc_review_command_runs_end_to_end(tmp_path, make_qc_dir):
         "Metadata_Plate": "26159",
         "Metadata_Well": "A02",
         "Metadata_Site": 1,
+        "Count_Nuclei": 120,
         "ImageQuality_PowerLogLogSlope_OrigDNA": -2.0,
+        "ImageQuality_FocusScore_OrigDNA": 1.2,
+        "ImageQuality_PercentMaximal_OrigDNA": 0.01,
     }
     qc_dir = make_qc_dir(tmp_path / "qc", row)
     out_dir = tmp_path / "review"

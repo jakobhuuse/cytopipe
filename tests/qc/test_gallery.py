@@ -11,13 +11,18 @@ from cytopipe.qc.gallery import build_gallery
 from cytopipe.qc.scan import scan_qc_metrics
 
 
-def _row(well, site, dna=-2.0, rna=-1.0):
+def _row(well, site, dna=-2.0, rna=-1.0, count=120, focus_dna=1.2, focus_rna=1.1, pct_dna=0.01, pct_rna=0.02):
     return {
         "Metadata_Plate": "26159",
         "Metadata_Well": well,
         "Metadata_Site": site,
+        "Count_Nuclei": count,
         "ImageQuality_PowerLogLogSlope_OrigDNA": dna,
         "ImageQuality_PowerLogLogSlope_OrigRNA": rna,
+        "ImageQuality_FocusScore_OrigDNA": focus_dna,
+        "ImageQuality_FocusScore_OrigRNA": focus_rna,
+        "ImageQuality_PercentMaximal_OrigDNA": pct_dna,
+        "ImageQuality_PercentMaximal_OrigRNA": pct_rna,
     }
 
 
@@ -27,7 +32,11 @@ def _extract(html, name):
     return json.loads(match.group(1))
 
 
-def test_build_gallery_embeds_rows_and_channels(tmp_path, make_qc_dir):
+def _panel(panels, key):
+    return next(panel for panel in panels if panel["key"] == key)
+
+
+def test_build_gallery_embeds_rows_and_panels(tmp_path, make_qc_dir):
     make_qc_dir(tmp_path, _row("A02", 1, dna=-2.0, rna=-1.0))
     make_qc_dir(tmp_path, _row("B03", 1, dna=-4.5, rna=-1.2))
     metrics = scan_qc_metrics(tmp_path)
@@ -36,14 +45,31 @@ def test_build_gallery_embeds_rows_and_channels(tmp_path, make_qc_dir):
     assert out.exists()
     html = out.read_text()
 
-    channels = _extract(html, "CHANNELS")
-    assert channels == ["DNA", "RNA"]
+    panels = _extract(html, "PANELS")
+    assert _panel(panels, "blur") == {
+        "key": "blur",
+        "label": "Blur score",
+        "shortLabel": "Blur",
+        "thresholdMode": "range",
+        "channels": ["DNA", "RNA"],
+        "domainFloor": None,
+        "domainCeiling": None,
+    }
+    assert _panel(panels, "cellCount")["channels"] == ["Nuclei"]
+    assert _panel(panels, "cellCount")["domainFloor"] == 0
+    assert _panel(panels, "percentMaximal")["thresholdMode"] == "max"
+    assert _panel(panels, "percentMaximal")["domainCeiling"] == 1
+    assert _panel(panels, "focusScore")["thresholdMode"] == "range"
+    assert _panel(panels, "focusScore")["domainFloor"] == 0
 
     rows = _extract(html, "ROWS")
     assert len(rows) == 2
     by_well = {row["well"]: row for row in rows}
-    assert by_well["B03"]["values"]["DNA"] == -4.5
+    assert by_well["B03"]["values"]["blur"]["DNA"] == -4.5
     assert by_well["A02"]["site"] == 1
+    assert by_well["A02"]["values"]["cellCount"]["Nuclei"] == 120
+    assert by_well["A02"]["values"]["percentMaximal"]["DNA"] == 0.01
+    assert by_well["A02"]["values"]["focusScore"]["DNA"] == 1.2
 
 
 def _thumb_src(html, key):

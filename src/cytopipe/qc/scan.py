@@ -7,7 +7,16 @@ import pandas as pd
 
 from cytopipe.columns import METADATA_PLATE, METADATA_SITE, METADATA_WELL
 
-POWERLOGLOGSLOPE_PREFIX = "ImageQuality_PowerLogLogSlope_Orig"
+BLUR_PREFIX = "ImageQuality_PowerLogLogSlope_Orig"
+FOCUS_SCORE_PREFIX = "ImageQuality_FocusScore_Orig"
+PERCENT_MAXIMAL_PREFIX = "ImageQuality_PercentMaximal_Orig"
+CELL_COUNT_COLUMN = "Count_Nuclei"
+
+# Every per-channel metric the review gallery can plot. All three come from the same
+# MeasureImageQuality module (1_QC.cppipe), computed for every channel already, alongside
+# CELL_COUNT_COLUMN from the Nuclei IdentifyPrimaryObjects module (a single value, not
+# per-channel).
+PER_CHANNEL_PREFIXES = (BLUR_PREFIX, FOCUS_SCORE_PREFIX, PERCENT_MAXIMAL_PREFIX)
 
 
 def _find_dirs(root: Path, name: str) -> list[Path]:
@@ -36,13 +45,13 @@ def _overlay_index(qc_dir: Path) -> dict[str, Path]:
 def scan_qc_metrics(qc_dir: Path) -> pd.DataFrame:
     """Concatenate every ``QCb3/<Plate>_<Well>/Image.csv`` found anywhere under ``qc_dir``.
 
-    Keeps ``Metadata_Plate``/``Well``/``Site`` and every ``PowerLogLogSlope`` column, and adds
-    an ``overlay_path`` column resolving each row's matching review thumbnail (``None`` if not
-    found). Both ``1_QC.cppipe`` and ``nuclei.cppipe`` write this same layout. The search
-    recurses through symlinks, so ``qc_dir`` may be one plate's chunk outputs or a whole run's
-    worth across several plates, each in their own subdirectory (or symlinked chunk directory,
-    as Nextflow stages them). Rows are told apart by their own ``Metadata_Plate``/``Well``/
-    ``Site`` values, not by directory structure.
+    Keeps ``Metadata_Plate``/``Well``/``Site``, ``CELL_COUNT_COLUMN``, and every column under
+    each ``PER_CHANNEL_PREFIXES`` prefix, and adds an ``overlay_path`` column resolving each
+    row's matching review thumbnail (``None`` if not found). The search recurses through
+    symlinks, so ``qc_dir`` may be one plate's chunk outputs or a whole run's worth across
+    several plates, each in their own subdirectory (or symlinked chunk directory, as Nextflow
+    stages them). Rows are told apart by their own ``Metadata_Plate``/``Well``/``Site`` values,
+    not by directory structure.
     """
     qc_dir = Path(qc_dir)
     paths = sorted(
@@ -56,9 +65,18 @@ def scan_qc_metrics(qc_dir: Path) -> pd.DataFrame:
     frames = []
     for path in paths:
         frame = pd.read_csv(path)
-        keep = [METADATA_PLATE, METADATA_WELL, METADATA_SITE] + [
-            column for column in frame.columns if column.startswith(POWERLOGLOGSLOPE_PREFIX)
+        per_channel_columns = [
+            column
+            for prefix in PER_CHANNEL_PREFIXES
+            for column in frame.columns
+            if column.startswith(prefix)
         ]
+        keep = [
+            METADATA_PLATE,
+            METADATA_WELL,
+            METADATA_SITE,
+            CELL_COUNT_COLUMN,
+        ] + per_channel_columns
         frames.append(frame[keep])
     metrics = pd.concat(frames, ignore_index=True)
 
@@ -70,10 +88,8 @@ def scan_qc_metrics(qc_dir: Path) -> pd.DataFrame:
     return metrics
 
 
-def channel_columns(metrics: pd.DataFrame) -> dict[str, str]:
-    """Map channel name (e.g. ``"DNA"``) to its ``PowerLogLogSlope`` column name in ``metrics``."""
+def channel_columns(metrics: pd.DataFrame, prefix: str) -> dict[str, str]:
+    """Map channel name (e.g. ``"DNA"``) to its full column name for the given metric prefix."""
     return {
-        column[len(POWERLOGLOGSLOPE_PREFIX) :]: column
-        for column in metrics.columns
-        if column.startswith(POWERLOGLOGSLOPE_PREFIX)
+        column[len(prefix) :]: column for column in metrics.columns if column.startswith(prefix)
     }

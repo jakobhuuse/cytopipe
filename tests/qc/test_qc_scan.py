@@ -8,13 +8,18 @@ import pytest
 from cytopipe.qc.scan import channel_columns, scan_qc_metrics
 
 
-def _row(well, site, dna=-2.0, rna=-1.0):
+def _row(well, site, dna=-2.0, rna=-1.0, count=120):
     return {
         "Metadata_Plate": "26159",
         "Metadata_Well": well,
         "Metadata_Site": site,
+        "Count_Nuclei": count,
         "ImageQuality_PowerLogLogSlope_OrigDNA": dna,
         "ImageQuality_PowerLogLogSlope_OrigRNA": rna,
+        "ImageQuality_FocusScore_OrigDNA": 1.2,
+        "ImageQuality_FocusScore_OrigRNA": 1.1,
+        "ImageQuality_PercentMaximal_OrigDNA": 0.01,
+        "ImageQuality_PercentMaximal_OrigRNA": 0.02,
     }
 
 
@@ -91,8 +96,27 @@ def test_scan_qc_metrics_follows_symlinked_chunk_dirs(tmp_path, make_qc_dir):
 def test_channel_columns_maps_channel_name_to_column(tmp_path, make_qc_dir):
     make_qc_dir(tmp_path, _row("A02", 1))
     metrics = scan_qc_metrics(tmp_path)
-    columns = channel_columns(metrics)
+    columns = channel_columns(metrics, "ImageQuality_PowerLogLogSlope_Orig")
     assert columns == {
         "DNA": "ImageQuality_PowerLogLogSlope_OrigDNA",
         "RNA": "ImageQuality_PowerLogLogSlope_OrigRNA",
     }
+
+
+def test_channel_columns_maps_focus_score_and_percent_maximal(tmp_path, make_qc_dir):
+    make_qc_dir(tmp_path, _row("A02", 1))
+    metrics = scan_qc_metrics(tmp_path)
+    assert channel_columns(metrics, "ImageQuality_FocusScore_Orig") == {
+        "DNA": "ImageQuality_FocusScore_OrigDNA",
+        "RNA": "ImageQuality_FocusScore_OrigRNA",
+    }
+    assert channel_columns(metrics, "ImageQuality_PercentMaximal_Orig") == {
+        "DNA": "ImageQuality_PercentMaximal_OrigDNA",
+        "RNA": "ImageQuality_PercentMaximal_OrigRNA",
+    }
+
+
+def test_scan_qc_metrics_keeps_cell_count(tmp_path, make_qc_dir):
+    make_qc_dir(tmp_path, _row("A02", 1, count=145))
+    metrics = scan_qc_metrics(tmp_path)
+    assert metrics["Count_Nuclei"].iloc[0] == 145
