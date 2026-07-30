@@ -46,28 +46,39 @@ def test_build_gallery_embeds_rows_and_channels(tmp_path, make_qc_dir):
     assert by_well["A02"]["site"] == 1
 
 
-def test_build_gallery_embeds_thumbnail_as_data_uri(tmp_path, make_qc_dir):
+def _thumb_src(html, key):
+    match = re.search(rf'<img data-key="{re.escape(key)}" src="([^"]*)">', html)
+    return match.group(1) if match else None
+
+
+def test_build_gallery_embeds_thumbnail_as_hidden_img(tmp_path, make_qc_dir):
     make_qc_dir(tmp_path, _row("A02", 1))
     metrics = scan_qc_metrics(tmp_path)
     overlay_bytes = metrics["overlay_path"].iloc[0].read_bytes()
 
     out = build_gallery(metrics, tmp_path / "gallery.html")
-    rows = _extract(out.read_text(), "ROWS")
+    html = out.read_text()
+    rows = _extract(html, "ROWS")
+    assert rows[0]["hasThumb"] is True
+    assert "thumb" not in rows[0]
 
     prefix = "data:image/png;base64,"
-    assert rows[0]["thumb"].startswith(prefix)
-    decoded = base64.b64decode(rows[0]["thumb"][len(prefix) :])
+    src = _thumb_src(html, "26159|A02|1")
+    assert src is not None and src.startswith(prefix)
+    decoded = base64.b64decode(src[len(prefix) :])
     assert decoded == overlay_bytes
 
 
-def test_build_gallery_missing_overlay_is_empty_thumb(tmp_path, make_qc_dir):
+def test_build_gallery_missing_overlay_has_no_thumb(tmp_path, make_qc_dir):
     make_qc_dir(tmp_path, _row("A02", 1))
     (tmp_path / "chunk1" / "Overlays" / "26159_A02_1_overlay.png").unlink()
     metrics = scan_qc_metrics(tmp_path)
 
     out = build_gallery(metrics, tmp_path / "gallery.html")
-    rows = _extract(out.read_text(), "ROWS")
-    assert rows[0]["thumb"] == ""
+    html = out.read_text()
+    rows = _extract(html, "ROWS")
+    assert rows[0]["hasThumb"] is False
+    assert _thumb_src(html, "26159|A02|1") is None
 
 
 def test_build_gallery_creates_parent_dirs(tmp_path, make_qc_dir):
