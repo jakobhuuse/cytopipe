@@ -11,7 +11,17 @@ from cytopipe.qc.gallery import build_gallery
 from cytopipe.qc.scan import scan_qc_metrics
 
 
-def _row(well, site, dna=-2.0, rna=-1.0, count=120, focus_dna=1.2, focus_rna=1.1, pct_dna=0.01, pct_rna=0.02):
+def _row(
+    well,
+    site,
+    dna=-2.0,
+    rna=-1.0,
+    count=120,
+    focus_dna=1.2,
+    focus_rna=1.1,
+    pct_dna=0.01,
+    pct_rna=0.02,
+):
     return {
         "Metadata_Plate": "26159",
         "Metadata_Well": well,
