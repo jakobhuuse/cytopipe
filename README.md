@@ -11,7 +11,7 @@ cytopipe is the data-management and glue layer for a Nextflow-orchestrated cell-
 cytopipe ships as a container image, and the pipeline pulls it automatically, so most users never install it directly. To pull the published image:
 
 ```bash
-docker pull ghcr.io/jakobhuuse/cytopipe:1.1.1
+docker pull ghcr.io/jakobhuuse/cytopipe:1.2.2
 ```
 
 To install the CLI from source for local work:
@@ -40,9 +40,9 @@ The CLI exposes seven subcommands.
 
 CellProfiler, DeepProfiler, and the rest of pycytominer (annotate, normalize, feature selection, consensus) run via their own images in the pipeline, not through this CLI.
 
-### Warning: verify the channel mapping for a new acquisition protocol
+### Channel mapping
 
-`cytopipe loaddata` assigns each filename's `w<N>` channel number to a Cell Painting stain via a hardcoded table (`CHANNEL_BY_NUMBER` in [scan.py](src/cytopipe/loaddata/scan.py), currently `w1=DNA, w2=Mito, w3=AGP, w4=RNA, w5=ER`). This is an assumption about the microscope's filter/channel configuration, not something cytopipe can verify on its own. If it's wrong for your acquisition, every measurement and every DeepProfiler embedding channel gets silently mislabeled by stain, with no error raised anywhere, results just come out wrong. Before running this against images from a new instrument, protocol, or filter configuration, confirm this mapping against the actual acquisition setup, not just against the code.
+`cytopipe loaddata` assigns each filename's `w<N>` channel number to a Cell Painting stain via a table (`CHANNEL_BY_NUMBER` in [scan.py](src/cytopipe/loaddata/scan.py)), currently `w1=DNA, w2=Mito, w3=AGP, w4=RNA, w5=ER`. That is the expected ordering for the acquisition setup this was written against. An instrument, protocol, or filter configuration that numbers its channels differently needs that table updated to match, since cytopipe reads the ordering from it rather than from the images.
 
 ### Why aggregate lives here
 
